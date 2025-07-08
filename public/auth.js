@@ -1,3 +1,4 @@
+// Inicialização do Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBKby0RdIOGorhrfBRMCWnL25peU3epGTw",
   authDomain: "prodai-58436.firebaseapp.com",
@@ -18,7 +19,9 @@ window.login = async function () {
 
   try {
     const result = await auth.signInWithEmailAndPassword(email, password);
+    const idToken = await result.user.getIdToken(); // 🔐 importante
     localStorage.setItem("user", JSON.stringify(result.user));
+    localStorage.setItem("idToken", idToken); // 🧠 salvar token
     console.log("Login realizado com sucesso");
     window.location.href = "index.html";
   } catch (error) {
@@ -34,7 +37,9 @@ window.register = async function () {
 
   try {
     const result = await auth.createUserWithEmailAndPassword(email, password);
+    const idToken = await result.user.getIdToken(); // 🔐 importante
     localStorage.setItem("user", JSON.stringify(result.user));
+    localStorage.setItem("idToken", idToken); // 🧠 salvar token
     console.log("Usuário cadastrado");
     window.location.href = "index.html";
   } catch (error) {
@@ -47,11 +52,12 @@ window.register = async function () {
 window.logout = async function () {
   await auth.signOut();
   localStorage.removeItem("user");
+  localStorage.removeItem("idToken");
   window.location.href = "login.html";
 };
 
 // 🔄 VERIFICAÇÃO DE SESSÃO
-auth.onAuthStateChanged((user) => {
+auth.onAuthStateChanged(async (user) => {
   const isLoginPage = window.location.pathname.includes("login.html");
 
   if (!user && !isLoginPage) {
@@ -60,5 +66,11 @@ auth.onAuthStateChanged((user) => {
 
   if (user && isLoginPage) {
     window.location.href = "index.html";
+  }
+
+  // Atualiza token no background
+  if (user) {
+    const idToken = await user.getIdToken();
+    localStorage.setItem("idToken", idToken);
   }
 });

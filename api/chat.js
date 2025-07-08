@@ -1,102 +1,80 @@
-import fetch from 'node-fetch';
-import admin from 'firebase-admin';
-import { getAuth } from 'firebase-admin/auth';
-import { getFirestore } from 'firebase-admin/firestore';
+// Função para adicionar mensagem na interface
+function addMessage(role, content) {
+  const chatContainer = document.getElementById('chat-container');
 
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId: "prodai-58436", // <-- substituído o process.env que não existia
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-    }),
-  });
+  const messageDiv = document.createElement('div');
+  messageDiv.classList.add(role === 'user' ? 'mensagem-usuario' : 'mensagem-assistente');
+  messageDiv.innerHTML = `<p><strong>${role === 'user' ? 'Você' : 'Assistente'}:</strong> ${content}</p>`;
+
+  chatContainer.appendChild(messageDiv);
+  chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 
-const db = getFirestore();
+// Histórico da conversa
+let conversationHistory = [];
 
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Método não permitido' });
+// Função principal para enviar mensagem
+async function enviarMensagem() {
+  const input = document.getElementById('mensagem');
+  const texto = input.value.trim();
+  if (!texto) return;
+
+  addMessage('user', texto);
+  input.value = '';
+
+  const resposta = await enviarParaAPI(texto, conversationHistory);
+  addMessage('assistant', resposta);
+
+  conversationHistory.push({ role: 'user', content: texto });
+  conversationHistory.push({ role: 'assistant', content: resposta });
+}
+
+// Enviar ao pressionar Enter
+document.getElementById('mensagem').addEventListener('keydown', function (event) {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    enviarMensagem();
   }
+});
 
-  const { message, conversationHistory = [], idToken } = req.body;
+// Botão de envio
+document.getElementById('enviar-btn').addEventListener('click', enviarMensagem);
 
-  if (!idToken) {
-    return res.status(401).json({ error: 'Usuário não autenticado' });
-  }
-
+// Função que envia mensagem para /api/chat com idToken do Firebase
+async function enviarParaAPI(userMessage, conversationHistory) {
   try {
-    const decoded = await getAuth().verifyIdToken(idToken);
-    const uid = decoded.uid;
-    const email = decoded.email;
+    const user = firebase.auth().currentUser;
 
-    const userRef = db.collection('usuarios').doc(uid);
-    const userDoc = await userRef.get();
-
-    const hoje = new Date().toISOString().split('T')[0];
-
-    if (!userDoc.exists) {
-      await userRef.set({
-        uid,
-        email,
-        plano: 'gratis',
-        mensagensHoje: 0,
-        ultimaData: hoje,
-      });
+    if (!user) {
+      console.warn("Usuário não autenticado.");
+      return "⚠️ Você precisa estar logado para usar o chat.";
     }
 
-    const userData = (await userRef.get()).data();
+    const idToken = await user.getIdToken();
 
-    if (userData.ultimaData !== hoje) {
-      await userRef.update({ mensagensHoje: 0, ultimaData: hoje });
-      userData.mensagensHoje = 0;
-    }
-
-    if (userData.plano === 'gratis' && userData.mensagensHoje >= 10) {
-      return res.status(403).json({ error: 'Limite diário de mensagens atingido' });
-    }
-
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('/api/chat', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
-        temperature: 0.7,
-        max_tokens: 1000,
-        messages: [
-          {
-            role: 'system',
-            content:
-              'Você é o Prod.AI 🎵 - um mentor especialista em produção musical brasileira, focado principalmente em FUNK, mas dominando todos os estilos musicais.',
-          },
-          ...conversationHistory,
-          { role: 'user', content: message },
-        ],
-      }),
+        message: userMessage,
+        conversationHistory: conversationHistory,
+        idToken: idToken
+      })
     });
 
     const data = await response.json();
 
-    if (!data.choices || !data.choices[0]?.message?.content) {
-      return res.status(500).json({ error: 'Resposta vazia da OpenAI', data });
+    if (!response.ok) {
+      console.error("Erro do servidor:", data.error);
+      return "❌ Erro: " + (data.error || "resposta vazia ou inesperada.");
     }
 
-    const reply = data.choices[0].message.content.trim();
-
-    if (userData.plano === 'gratis') {
-      await userRef.update({
-        mensagensHoje: admin.firestore.FieldValue.increment(1),
-      });
-    }
-
-    return res.status(200).json({ reply });
+    return data.reply;
 
   } catch (error) {
-    console.error('[ERRO NO /api/chat.js]', error);
-    return res.status(500).json({ error: 'Erro interno do servidor', detalhes: error.message });
+    console.error("Erro ao enviar para API:", error.message);
+    return "❌ Erro inesperado ao conectar com o servidor.";
   }
 }

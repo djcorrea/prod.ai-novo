@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Prod.AI</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-auth-compat.js"></script>
+  <script src="auth.js" defer></script>
+</head>
+<body>
+  <div class="container fade-in">
+    <h1 class="logo">Prod.AI</h1>
+    <p class="subtitle">Acesse sua conta</p>
+    <div class="input-container">
+      <input type="email" id="email" placeholder="Seu e-mail">
+      <input type="password" id="password" placeholder="Sua senha">
+      <button type="button" onclick="login()">Entrar</button>
+      <button type="button" onclick="register()">Cadastrar</button>
+    </div>
+    <p class="footer">Ainda não é Plus? <a href="https://checkout.stripe.com/p/link-do-seu-produto">Assinar versão Plus</a></p>
+  </div>
+</body>
+</html>

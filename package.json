@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "name": "chatbot-correa",
   "version": "1.0.0",
@@ -16,3 +17,17 @@
   "license": "ISC",
   "description": ""
 }
+=======
+{
+  "name": "chatbot-correa",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "dotenv": "^17.0.1",
+    "node-fetch": "^2.6.7"
+  }
+}
+>>>>>>> c7cc239d9a8f5fc772aee04c226cb22c19025142

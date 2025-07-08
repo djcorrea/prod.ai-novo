@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "version": 2,
   "builds": [
@@ -9,3 +10,16 @@
     { "src": "/(.*)", "dest": "/public/$1" }
   ]
 }
+=======
+{
+  "version": 2,
+  "builds": [
+    { "src": "api/chat.js", "use": "@vercel/node" },
+    { "src": "public/**", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/api/chat", "dest": "api/chat.js" },
+    { "src": "/(.*)", "dest": "/public/$1" }
+  ]
+}
+>>>>>>> c7cc239d9a8f5fc772aee04c226cb22c19025142

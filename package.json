@@ -1,0 +1,12 @@
+{
+  "name": "chatbot-correa",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "dotenv": "^17.0.1",
+    "node-fetch": "^2.6.7"
+  }
+}

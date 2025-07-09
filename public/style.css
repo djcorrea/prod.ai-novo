@@ -59,14 +59,8 @@ body {
 }
 
 @keyframes fadeIn {
-  from { 
-    opacity: 0; 
-    transform: translateY(30px) scale(0.95); 
-  }
-  to { 
-    opacity: 1; 
-    transform: translateY(0) scale(1); 
-  }
+  from { opacity: 0; transform: translateY(30px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .header {
@@ -287,6 +281,7 @@ button svg {
   height: 18px;
 }
 
+/* Footer atualizado */
 .footer {
   display: flex;
   flex-direction: column;
@@ -313,10 +308,10 @@ button svg {
 }
 
 .footer a {
-  color: #9333ea;
+  color: #ffffff;
   text-decoration: none;
-  transition: color 0.3s ease;
   font-weight: 500;
+  transition: color 0.3s ease;
 }
 
 .footer a:hover {
@@ -324,21 +319,20 @@ button svg {
 }
 
 .btn-plus {
-  background: #ffffff;
-  color: #7c3aed;
+  background: linear-gradient(to right, #9a00ff, #5f00ff);
+  color: #ffffff;
   padding: 10px 20px;
   border-radius: 10px;
   font-weight: bold;
   text-decoration: none;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+  box-shadow: 0 0 10px rgba(159, 0, 255, 0.6);
+  transition: transform 0.2s, box-shadow 0.2s;
   border: none;
 }
 
 .btn-plus:hover {
   transform: scale(1.05);
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
-  background: #f1f1f1;
+  box-shadow: 0 0 15px rgba(159, 0, 255, 0.8);
 }
 
 @media (max-width: 768px) {

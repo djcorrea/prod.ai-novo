@@ -182,8 +182,8 @@ input[type="text"]:focus {
 
 /* Botões */
 button,
-.logout-button,
-.btn-plus {
+.btn-plus,
+.btn-sair {
   padding: 1rem 1.5rem;
   background: linear-gradient(135deg, #9333ea, #7c3aed);
   border: none;
@@ -202,8 +202,8 @@ button,
 }
 
 button:hover,
-.logout-button:hover,
-.btn-plus:hover {
+.btn-plus:hover,
+.btn-sair:hover {
   transform: scale(1.05);
   box-shadow: 0 0 15px rgba(159, 0, 255, 0.8);
 }
@@ -220,11 +220,11 @@ button:hover,
 
 .footer-buttons {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
   width: 100%;
+  margin-bottom: 1rem;
+  gap: 1rem;
 }
 
 .footer p {
@@ -269,7 +269,7 @@ button:hover,
   }
 
   .btn-plus,
-  .logout-button {
+  .btn-sair {
     width: 100%;
   }
 

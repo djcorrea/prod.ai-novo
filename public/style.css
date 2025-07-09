@@ -213,6 +213,9 @@ button,
   display: flex;
   align-items: center;
   justify-content: center;
+  text-align: center;
+  width: 100%;
+  max-width: 100%;
 }
 
 button:hover,
@@ -232,6 +235,16 @@ button:hover,
   margin-top: 2rem;
   padding-top: 1rem;
   border-top: 1px solid rgba(147, 51, 234, 0.2);
+}
+
+.footer-buttons {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
 
 .footer p {
@@ -272,7 +285,13 @@ button:hover,
     gap: 0.75rem;
   }
 
-  button {
+  .footer-buttons {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  button,
+  .btn-plus {
     width: 100%;
   }
 

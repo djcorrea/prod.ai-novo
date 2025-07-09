@@ -1,33 +1,17 @@
-import admin from 'firebase-admin';
+import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
-import { getFirestore } from 'firebase-admin/firestore';
-
-function processPrivateKey(key) {
-  if (!key) throw new Error('FIREBASE_PRIVATE_KEY não definida');
-  let processedKey = key.trim();
-  if (processedKey.startsWith('"') && processedKey.endsWith('"')) {
-    processedKey = processedKey.slice(1, -1);
-  }
-  return processedKey.replace(/\\n/g, '\n');
-}
+import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 
 let firebaseInitialized = false;
 
 async function initializeFirebase() {
-  if (firebaseInitialized) return;
-  const privateKey = processPrivateKey(process.env.FIREBASE_PRIVATE_KEY);
+  if (firebaseInitialized || getApps().length > 0) return;
 
-  const firebaseConfig = {
-    credential: admin.credential.cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey,
-    }),
-  };
+  const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 
-  if (!admin.apps.length) {
-    admin.initializeApp(firebaseConfig);
-  }
+  initializeApp({
+    credential: cert(serviceAccount),
+  });
 
   firebaseInitialized = true;
 }
@@ -39,6 +23,7 @@ export default async function handler(req, res) {
   try {
     await initializeFirebase();
     const db = getFirestore();
+    const auth = getAuth();
 
     const { message, conversationHistory = [], idToken } = req.body;
 
@@ -48,7 +33,7 @@ export default async function handler(req, res) {
 
     let decoded;
     try {
-      decoded = await getAuth().verifyIdToken(idToken);
+      decoded = await auth.verifyIdToken(idToken);
     } catch (err) {
       return res.status(401).json({ error: 'Token inválido ou expirado' });
     }
@@ -109,7 +94,7 @@ export default async function handler(req, res) {
     const reply = data.choices[0].message.content.trim();
 
     if (userData.plano === 'gratis') {
-      await userRef.update({ mensagensHoje: admin.firestore.FieldValue.increment(1) });
+      await userRef.update({ mensagensHoje: FieldValue.increment(1) });
     }
 
     return res.status(200).json({ reply });

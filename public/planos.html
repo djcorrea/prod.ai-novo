@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Assine o Prod.AI</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(180deg, #0d0c22, #15142a);
+      color: white;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 3rem;
+      color: #9b5cff;
+      margin-bottom: 10px;
+    }
+
+    p.subtitle {
+      font-size: 1.2rem;
+      color: #ccc;
+      margin-bottom: 40px;
+    }
+
+    .plans {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 40px;
+    }
+
+    .plan-box {
+      background: #1d1b38;
+      border: 2px solid #9b5cff30;
+      border-radius: 20px;
+      padding: 30px;
+      width: 320px;
+      box-shadow: 0 0 20px #00000040;
+      transition: transform 0.3s ease;
+    }
+
+    .plan-box:hover {
+      transform: scale(1.03);
+    }
+
+    .plan-title {
+      font-size: 1.6rem;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+
+    .price {
+      font-size: 2.2rem;
+      font-weight: bold;
+      color: #9b5cff;
+      margin-bottom: 20px;
+    }
+
+    ul.benefits {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 30px 0;
+      text-align: left;
+    }
+
+    ul.benefits li {
+      margin: 10px 0;
+      position: relative;
+      padding-left: 24px;
+    }
+
+    ul.benefits li::before {
+      content: "✔";
+      position: absolute;
+      left: 0;
+      color: #9b5cff;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 30px;
+      background: #9b5cff;
+      color: white;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+
+    .btn:hover {
+      background: #7b3cff;
+    }
+
+    .footer {
+      margin-top: 60px;
+      font-size: 0.9rem;
+      color: #aaa;
+    }
+
+    @media (max-width: 700px) {
+      .plans {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Escolha seu plano</h1>
+    <p class="subtitle">Desbloqueie todo o potencial da sua produção musical</p>
+
+    <div class="plans">
+      <!-- Plano Grátis -->
+      <div class="plan-box">
+        <div class="plan-title">Free</div>
+        <div class="price">R$0/mês</div>
+        <ul class="benefits">
+          <li>Acesso ao chatbot de produção</li>
+          <li>3 mensagens por dia</li>
+          <li>Respostas básicas</li>
+          <li>Sem personalização</li>
+        </ul>
+        <a href="index.html" class="btn">Usar grátis</a>
+      </div>
+
+      <!-- Plano Plus -->
+      <div class="plan-box" style="border-color: #9b5cff;">
+        <div class="plan-title">Prod.AI Plus</div>
+        <div class="price">R$19,90/mês</div>
+        <ul class="benefits">
+          <li>Mensagens ilimitadas</li>
+          <li>Respostas mais avançadas</li>
+          <li>Análise de mix/master e melodias</li>
+          <li>Dicas personalizadas para suas tracks</li>
+          <li>Prioridade no servidor</li>
+        </ul>
+        <a href="#pagamento" class="btn">Assinar agora</a>
+      </div>
+    </div>
+
+    <div class="footer">
+      Siga no Instagram: <strong>@djcorreaoriginal</strong>
+    </div>
+  </div>
+</body>
+</html>

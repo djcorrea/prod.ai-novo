@@ -244,12 +244,13 @@ input[type="text"]::placeholder {
   color: rgba(255, 255, 255, 0.5);
 }
 
-button {
+button,
+.logout-button {
   padding: 1rem 1.5rem;
   background: linear-gradient(135deg, #9333ea, #7c3aed);
   border: none;
   border-radius: 16px;
-  color: white;
+  color: #ffffff;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -259,14 +260,18 @@ button {
   gap: 0.5rem;
   box-shadow: 0 8px 16px rgba(147, 51, 234, 0.3);
   font-family: 'Inter', sans-serif;
+  text-align: center;
+  justify-content: center;
 }
 
-button:hover {
+button:hover,
+.logout-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 12px 24px rgba(147, 51, 234, 0.4);
 }
 
-button:active {
+button:active,
+.logout-button:active {
   transform: translateY(0);
 }
 
@@ -321,13 +326,16 @@ button svg {
 .btn-plus {
   background: linear-gradient(to right, #9a00ff, #5f00ff);
   color: #ffffff;
-  padding: 10px 20px;
-  border-radius: 10px;
-  font-weight: bold;
+  padding: 1rem 1.5rem;
+  border-radius: 16px;
+  font-weight: 600;
   text-decoration: none;
-  box-shadow: 0 0 10px rgba(159, 0, 255, 0.6);
+  box-shadow: 0 8px 16px rgba(159, 0, 255, 0.3);
   transition: transform 0.2s, box-shadow 0.2s;
   border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-plus:hover {

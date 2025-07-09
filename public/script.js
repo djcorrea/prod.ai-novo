@@ -71,25 +71,36 @@ async function sendMessage() {
     } catch (e) {
       hideTypingIndicator();
       console.error("Resposta inválida do servidor:", rawText);
-      appendMessage(`<strong>Assistente:</strong> Erro inesperado no servidor.`, 'bot');
+
+      if (rawText.toLowerCase().includes('limite diário')) {
+        appendMessage(`<strong>Assistente:</strong> 🚫 Você atingiu o limite de <strong>10 mensagens diárias</strong> na versão gratuita.<br><br>🔓 <a href="https://seulink-do-stripe.com" target="_blank">Clique aqui para assinar a versão Plus</a> e liberar mensagens ilimitadas.`, 'bot');
+      } else {
+        appendMessage(`<strong>Assistente:</strong> Erro inesperado no servidor.`, 'bot');
+      }
       return;
     }
 
     hideTypingIndicator();
 
-    if (data.reply) {
+    if (data.error === 'limite diário atingido' || data.error?.toLowerCase().includes('limite diário')) {
+      appendMessage(`<strong>Assistente:</strong> 🚫 Você atingiu o limite de <strong>10 mensagens diárias</strong> na versão gratuita.<br><br>🔓 <a href="https://seulink-do-stripe.com" target="_blank">Clique aqui para assinar a versão Plus</a> e liberar mensagens ilimitadas.`, 'bot');
+    } else if (data.reply) {
       appendMessage(`<strong>Assistente:</strong> ${data.reply}`, 'bot');
       conversationHistory.push({ role: 'assistant', content: data.reply });
-    } else if (data.error === 'Limite diário de mensagens atingido') {
-      appendMessage(`<strong>Assistente:</strong> Você atingiu o limite de 10 mensagens diárias da versão gratuita. <a href="https://seulink-do-stripe.com" target="_blank">Assine a versão Plus</a> para mensagens ilimitadas.`, 'bot');
     } else {
-      appendMessage(`<strong>Assistente:</strong> Você atingiu o limite de 10 mensagens diárias da versão gratuita.`, 'bot');
+      appendMessage(`<strong>Assistente:</strong> Ocorreu um erro inesperado.`, 'bot');
       console.error('Erro na resposta:', data);
     }
 
   } catch (err) {
     hideTypingIndicator();
-    appendMessage(`<strong>Assistente:</strong> Você atingiu o limite de 10 mensagens diárias da versão gratuita.`, 'bot');
+
+    if (err.message.includes('403')) {
+      appendMessage(`<strong>Assistente:</strong> 🚫 Você atingiu o limite de <strong>10 mensagens diárias</strong> na versão gratuita.<br><br>🔓 <a href="https://seulink-do-stripe.com" target="_blank">Clique aqui para assinar a versão Plus</a> e liberar mensagens ilimitadas.`, 'bot');
+    } else {
+      appendMessage(`<strong>Assistente:</strong> Erro ao se conectar com o servidor.`, 'bot');
+    }
+
     console.error(err);
   } finally {
     sendBtn.disabled = false;

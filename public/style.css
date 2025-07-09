@@ -304,15 +304,28 @@ button svg {
 }
 
 .footer {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   margin-top: 2rem;
   padding-top: 1rem;
   border-top: 1px solid rgba(147, 51, 234, 0.2);
 }
 
+.footer-buttons {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .footer p {
   color: rgba(255, 255, 255, 0.6);
   font-size: 0.9rem;
+  margin-top: 0.5rem;
 }
 
 .footer a {
@@ -324,6 +337,22 @@ button svg {
 
 .footer a:hover {
   color: #a855f7;
+}
+
+.btn-plus {
+  background: linear-gradient(to right, #9a00ff, #5f00ff);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 0 10px rgba(159, 0, 255, 0.6);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-plus:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(159, 0, 255, 0.8);
 }
 
 @media (max-width: 768px) {
@@ -352,6 +381,11 @@ button svg {
 
   .message-content {
     font-size: 0.9rem;
+  }
+
+  .footer-buttons {
+    flex-direction: column;
+    gap: 0.5rem;
   }
 }
 

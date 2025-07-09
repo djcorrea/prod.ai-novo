@@ -89,7 +89,7 @@ async function sendMessage() {
 
   } catch (err) {
     hideTypingIndicator();
-    appendMessage(`<strong>Assistente:</strong> Erro ao se conectar com o servidor.`, 'bot');
+    appendMessage(`<strong>Assistente:</strong> Você atingiu o limite de 10 mensagens diárias da versão gratuita.`, 'bot');
     console.error(err);
   } finally {
     sendBtn.disabled = false;

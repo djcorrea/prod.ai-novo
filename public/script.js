@@ -83,7 +83,7 @@ async function sendMessage() {
     } else if (data.error === 'Limite diário de mensagens atingido') {
       appendMessage(`<strong>Assistente:</strong> Você atingiu o limite de 10 mensagens diárias da versão gratuita. <a href="https://seulink-do-stripe.com" target="_blank">Assine a versão Plus</a> para mensagens ilimitadas.`, 'bot');
     } else {
-      appendMessage(`<strong>Assistente:</strong> Erro: resposta vazia ou inesperada.`, 'bot');
+      appendMessage(`<strong>Assistente:</strong> Você atingiu o limite de 10 mensagens diárias da versão gratuita.`, 'bot');
       console.error('Erro na resposta:', data);
     }
 

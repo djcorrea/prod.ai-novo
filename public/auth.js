@@ -14,8 +14,8 @@ if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 const auth = firebase.auth();
+const db = firebase.firestore(); // Adiciona acesso ao Firestore
 
-// Utilitário para mostrar erros bonitinho
 function showError(message) {
   const el = document.getElementById("error-message");
   if (el) {
@@ -24,6 +24,17 @@ function showError(message) {
   } else {
     alert(message);
   }
+}
+
+// Função para obter o fingerprint do navegador
+async function getFingerprint() {
+  if (window.FingerprintJS) {
+    const fpPromise = FingerprintJS.load();
+    const fp = await fpPromise;
+    const result = await fp.get();
+    return result.visitorId; // fingerprint único do navegador
+  }
+  return null;
 }
 
 // 🔐 LOGIN
@@ -57,9 +68,39 @@ window.signUp = async function () {
   const password = document.getElementById("password").value.trim();
 
   try {
+    // Obter o fingerprint antes de cadastrar
+    const fingerprint = await getFingerprint();
+
+    if (!fingerprint) {
+      showError("Erro ao identificar seu navegador. Tente novamente.");
+      return;
+    }
+
+    // Consulta no Firestore para ver se já existe esse fingerprint
+    const fpQuery = await db.collection("fingerprints").doc(fingerprint).get();
+
+    if (fpQuery.exists) {
+      showError(
+        "Você já criou uma conta gratuita neste navegador. Faça login ou assine o plano Plus para criar outra conta."
+      );
+      return;
+    }
+
+    // Se não existe, prossegue com o cadastro
     const result  = await auth.createUserWithEmailAndPassword(email, password);
+
+    // Salva o fingerprint no Firestore (coleção 'fingerprints', doc = fingerprint)
+    await db.collection("fingerprints").doc(fingerprint).set({
+      email: email,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
     // Envia e-mail de verificação
-    await result.user.sendEmailVerification();
+    await result.user.sendEmailVerification({
+      url: 'https://prod-ai-novo.vercel.app/login.html',
+      handleCodeInApp: false,
+      locale: 'pt'
+    });
 
     showError(
       "Cadastro realizado! Um e-mail de confirmação foi enviado. Verifique sua caixa de entrada (e spam). Só será possível acessar após confirmar seu e-mail."
@@ -72,10 +113,8 @@ window.signUp = async function () {
   }
 };
 
-// (opcional) manter alias se precisar chamar também via register()
 window.register = window.signUp;
 
-// 🔓 LOGOUT
 window.logout = async function () {
   await auth.signOut();
   localStorage.removeItem("user");
@@ -83,14 +122,12 @@ window.logout = async function () {
   window.location.href = "login.html";
 };
 
-// 🔄 VERIFICAÇÃO DE SESSÃO
 auth.onAuthStateChanged(async (user) => {
   const isLoginPage = window.location.pathname.includes("login.html");
   if (!user && !isLoginPage) {
     return window.location.href = "login.html";
   }
   if (user && isLoginPage) {
-    // Não redireciona se e-mail não foi confirmado
     if (!user.emailVerified) {
       showError("⚠️ Confirme seu e-mail antes de acessar!");
       await auth.signOut();

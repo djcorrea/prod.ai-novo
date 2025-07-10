@@ -3,132 +3,146 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Assine o Prod.AI</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Planos - Prod.AI Plus</title>
+  <!-- Fonte Inter do Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    /* Styles específicos para a página de planos */
-    .plans {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 2rem;
-      margin-top: 2rem;
+    /* Reset básico */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-
-    .plan-box {
-      background: rgba(15, 15, 35, 0.9);
-      border: 1px solid rgba(147, 51, 234, 0.2);
-      border-radius: 20px;
-      padding: 2rem;
-      width: 320px;
-      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-      transition: transform 0.3s ease;
-    }
-    .plan-box:hover {
-      transform: scale(1.03);
-    }
-
-    .plan-title {
-      font-size: 1.6rem;
-      font-weight: 600;
+    /* Corpo: fundo gradiente, centralizado */
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0a0a0a 0%, #16213e 100%);
       color: #fff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    /* Container dos cards de plano */
+    .plans {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+      width: 100%;
+      max-width: 1000px;
+    }
+    /* Estilo base de cada card */
+    .plan-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 12px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+    }
+    /* Destaque para o plano mais popular */
+    .plan-card.popular {
+      border: 2px solid #8b5cf6;
+    }
+    .plan-card.popular::before {
+      content: 'Mais Popular';
+      position: absolute;
+      top: -10px;
+      background: #8b5cf6;
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+    }
+    /* Título do plano */
+    .plan-title {
+      font-size: 1.5rem;
       margin-bottom: 0.5rem;
     }
-
-    .price {
-      font-size: 2.2rem;
-      font-weight: bold;
-      color: #9b5cff;
+    /* Preço */
+    .plan-price {
+      font-size: 2.5rem;
       margin-bottom: 1rem;
     }
-
-    ul.benefits {
+    .plan-price span {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.7);
+    }
+    /* Lista de funcionalidades */
+    .plan-features {
       list-style: none;
-      padding: 0;
       margin-bottom: 1.5rem;
+      width: 100%;
       text-align: left;
     }
-    ul.benefits li {
-      margin: 10px 0;
+    .plan-features li {
+      margin-bottom: 0.5rem;
+      padding-left: 1.2rem;
       position: relative;
-      padding-left: 1.5rem;
     }
-    ul.benefits li::before {
-      content: "✔";
+    .plan-features li::before {
+      content: '✓';
       position: absolute;
       left: 0;
-      color: #9b5cff;
+      color: #6ee7b7;
     }
-
-    .btn {
-      display: inline-block;
+    /* Botão de seleção */
+    .plan-button {
       padding: 0.75rem 1.5rem;
-      background: linear-gradient(135deg, #9333ea, #7c3aed);
-      color: #ffffff;
-      font-weight: 500;
+      border: none;
+      border-radius: 8px;
+      background: #8b5cf6;
+      color: #fff;
       font-size: 1rem;
-      text-decoration: none;
-      border-radius: 12px;
-      transition: background 0.3s ease;
+      cursor: pointer;
+      transition: background 0.3s;
     }
-    .btn:hover {
-      background: linear-gradient(135deg, #7c3aed, #9333ea);
-    }
-
-    /* Responsividade */
-    @media (max-width: 700px) {
-      .plans {
-        flex-direction: column;
-        align-items: center;
-      }
-      .plan-box {
-        width: 100%;
-        max-width: 400px;
-      }
+    .plan-button:hover {
+      background: #7c3aed;
     }
   </style>
 </head>
 <body>
-  <div class="container fade-in">
-    <h1 class="logo">Escolha seu plano</h1>
-    <p class="subtitle">Desbloqueie todo o potencial da sua produção musical</p>
-
-    <div class="plans">
-      <!-- Plano Grátis -->
-      <div class="plan-box">
-        <div class="plan-title">Free</div>
-        <div class="price">R$0/mês</div>
-        <ul class="benefits">
-          <li>Acesso ao chatbot de produção</li>
-          <li>3 mensagens por dia</li>
-          <li>Respostas básicas</li>
-          <li>Sem personalização</li>
-        </ul>
-        <a href="index.html" class="btn">Usar grátis</a>
-      </div>
-
-      <!-- Plano Plus -->
-      <div class="plan-box" style="border-color: #9b5cff;">
-        <div class="plan-title">Prod.AI Plus</div>
-        <div class="price">R$19,90/mês</div>
-        <ul class="benefits">
-          <li>Mensagens ilimitadas</li>
-          <li>Respostas mais avançadas</li>
-          <li>Análise de mix/master e melodias</li>
-          <li>Dicas personalizadas para suas tracks</li>
-          <li>Prioridade no servidor</li>
-        </ul>
-        <!-- Link de SANDBOX: substitua TEST_PREAPPROVAL_PLAN_ID pelo ID de teste -->
-        <a
-          href="https://sandbox.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=TEST_PREAPPROVAL_PLAN_ID"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="btn"
-        >
-          Assinar agora
-        </a>
-      </div>
+  <div class="plans">
+    <!-- Plano Gratuito -->
+    <div class="plan-card">
+      <h2 class="plan-title">Plano Gratuito</h2>
+      <p class="plan-price">R$0<span>/mês</span></p>
+      <ul class="plan-features">
+        <li>Acesso limitado</li>
+        <li>10 créditos/dia</li>
+        <li>Suporte básico</li>
+      </ul>
+      <button class="plan-button">Selecionar</button>
     </div>
 
-    <div class="footer">
-      Siga no Instagram: <strong>@djcorreaoriginal</strong>
+    <!-- Plano Plus (mais popular) -->
+    <div class="plan-card popular">
+      <h2 class="plan-title">Plano Plus</h2>
+      <p class="plan-price">R$29<span>/mês</span></p>
+      <ul class="plan-features">
+        <li>Acesso ilimitado</li>
+        <li>100 créditos/dia</li>
+        <li>Suporte prioritário</li>
+      </ul>
+      <button class="plan-button">Selecionar</button>
+    </div>
+
+    <!-- Plano Pro -->
+    <div class="plan-card">
+      <h2 class="plan-title">Plano Pro</h2>
+      <p class="plan-price">R$49<span>/mês</span></p>
+      <ul class="plan-features">
+        <li>Acesso ilimitado</li>
+        <li>Créditos ilimitados</li>
+        <li>Consultoria personalizada</li>
+      </ul>
+      <button class="plan-button">Selecionar</button>
+    </div>
+  </div>
+</body>
+</html>

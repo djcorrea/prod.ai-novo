@@ -55,7 +55,7 @@ window.login = async function () {
   try {
     const result  = await auth.signInWithEmailAndPassword(email, password);
 
-    // *** REMOVIDO: Checagem de e-mail verificado ***
+    // NÃO há checagem de e-mail verificado aqui
 
     const idToken = await result.user.getIdToken();
     localStorage.setItem("user", JSON.stringify(result.user));
@@ -82,7 +82,7 @@ window.signUp = async function () {
       return;
     }
 
-    // 2. Checa se fingerprint OU IP já estão cadastrados (leitura permitida a todos)
+    // 2. Checa se fingerprint OU IP já estão cadastrados
     const fpQuery = await db.collection("fingerprints").doc(fingerprint).get();
     const ipQuery = await db.collection("ips").doc(ip).get();
 
@@ -96,7 +96,7 @@ window.signUp = async function () {
     // 3. Cria o usuário (autentica para liberar gravação)
     const result  = await auth.createUserWithEmailAndPassword(email, password);
 
-    // 4. Salva fingerprint e IP (agora permitido pelas regras de produção)
+    // 4. Salva fingerprint e IP
     await db.collection("fingerprints").doc(fingerprint).set({
       email: email,
       ip: ip,
@@ -141,7 +141,7 @@ auth.onAuthStateChanged(async (user) => {
     window.location.href = "login.html";
   }
   if (user && isLoginPage) {
-    // *** REMOVIDO: Checagem de e-mail verificado ***
+    // NÃO há checagem de e-mail verificado aqui
     window.location.href = "index.html";
   }
   if (user) {

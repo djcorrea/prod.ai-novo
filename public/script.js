@@ -46,7 +46,7 @@ async function sendMessage() {
     const user = firebase.auth().currentUser;
     if (!user) {
       appendMessage(
-        `<strong>Assistente:</strong> Você precisa estar logado para usar o chat.`,
+        `<strong>Assistente:</strong> Você precisa estar logado para usar o chat.<br>Por favor, faça login para continuar.`,
         'bot'
       );
       hideTypingIndicator();

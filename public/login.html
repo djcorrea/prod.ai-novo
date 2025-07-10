@@ -3,99 +3,51 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Prod.AI – Login</title>
+  <title>Login - Prod.AI</title>
 
+  <!-- CSS principal -->
   <link rel="stylesheet" href="style.css" />
-  <style>
-    /* ===== Login-specific styles ===== */
-    .container {
-      max-width: 400px;
-      padding: 2rem;
-      margin: 4rem auto;
-      text-align: center;
-    }
+  <!-- Fontes -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    .subtitle {
-      color: rgba(255,255,255,0.7);
-      margin-bottom: 1.5rem;
-    }
-
-    .input-group {
-      margin-bottom: 1rem;
-    }
-    .input-group input {
-      width: 100%;
-      padding: 0.9rem 1rem;
-      border: 2px solid rgba(147, 51, 234,0.3);
-      border-radius: 12px;
-      background: rgba(10,10,25,0.8);
-      color: #fff;
-      font-size: 1rem;
-      outline: none;
-      transition: all 0.3s;
-    }
-    .input-group input:focus {
-      border-color: #9333ea;
-      box-shadow: 0 0 0 3px rgba(147,51,234,0.2);
-    }
-
-    .button-group {
-      display: flex;
-      gap: 0.75rem;
-      justify-content: center;
-      margin-top: 1rem;
-      flex-wrap: wrap;
-    }
-
-    .button-group .btn,
-    .button-group .btn-plus {
-      flex: 1;
-      min-width: 120px;
-    }
-
-    .error-message {
-      background: rgba(255,0,0,0.2);
-      color: #ff6961;
-      padding: 0.75rem;
-      border-radius: 8px;
-      margin-bottom: 1rem;
-      display: none;
-    }
-  </style>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-auth-compat.js"></script>
+  <!-- Seu auth.js -->
+  <script src="auth.js" defer></script>
 </head>
 <body>
+  <!-- Partículas de fundo -->
   <div class="particles"></div>
 
   <div class="container fade-in">
     <h1 class="logo">Prod.AI</h1>
     <p class="subtitle">Acesse sua conta</p>
 
-    <div id="error-message" class="error-message"></div>
-
-    <div class="input-group">
-      <input id="email"   type="email"    placeholder="Seu e-mail" autocomplete="username" />
-    </div>
-    <div class="input-group">
-      <input id="password" type="password" placeholder="Sua senha" autocomplete="current-password" />
+    <div class="input-container">
+      <input type="email"    id="email"    placeholder="Seu e-mail" autocomplete="username" />
+      <input type="password" id="password" placeholder="Sua senha"   autocomplete="current-password" />
     </div>
 
-    <div class="button-group">
-      <button class="btn-plus" onclick="login()">Entrar</button>
-      <button class="btn"      onclick="signUp()">Cadastrar</button>
+    <div class="input-container" style="justify-content: center; gap:1rem; margin-top:1rem;">
+      <button class="btn-plus"  type="button" onclick="login()">Entrar</button>
+      <button class="btn"       type="button" onclick="register()">Cadastrar</button>
     </div>
 
     <hr style="margin:2rem 0; border-color: rgba(147,51,234,0.2)" />
 
-    <p class="subtitle">
-      Ainda não é Plus? 
-      <a href="planos.html" class="btn-plus" style="display:inline-block; padding:0.5rem 1rem; font-size:0.9rem; margin-top:0;">Assinar versão Plus</a>
+    <p class="footer">
+      Ainda não é Plus?
+      <a 
+        href="planos.html" 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        class="btn-plus" 
+        style="display:inline-block; margin-top:0.5rem; padding:0.6rem 1rem; font-size:0.9rem;"
+      >
+        Assinar versão Plus
+      </a>
     </p>
   </div>
-
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-auth-compat.js"></script>
-  <!-- Seu script de autenticação -->
-  <script src="auth.js"></script>
 </body>
 </html>

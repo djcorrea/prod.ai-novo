@@ -1,3 +1,4 @@
+```js
 // script.js
 
 // ─── ELEMENTOS DO DOM ─────────────────────────────────────
@@ -26,6 +27,7 @@ function showTypingIndicator() {
   typingIndicator.style.display = 'flex';
   chatbox.scrollTop              = chatbox.scrollHeight;
 }
+
 function hideTypingIndicator() {
   typingIndicator.style.display = 'none';
 }
@@ -73,7 +75,7 @@ async function sendMessage() {
       console.error("Resposta inválida do servidor:", rawText);
       appendMessage(
         `<strong>Assistente:</strong> 🚫 Você atingiu o limite de <strong>10 mensagens diárias</strong> na versão gratuita.<br><br>` +
-        `🔓 <a href="#" class="btn-plus">Clique aqui para assinar a versão Plus</a> e liberar mensagens ilimitadas.`,
+        `🔓 <button class="btn-plus">Clique aqui para assinar a versão Plus</button> e liberar mensagens ilimitadas.`,
         'bot'
       );
       return;
@@ -84,7 +86,7 @@ async function sendMessage() {
     if (data.error && data.error.toLowerCase().includes('limite diário')) {
       appendMessage(
         `<strong>Assistente:</strong> 🚫 Você atingiu o limite de <strong>10 mensagens diárias</strong> na versão gratuita.<br><br>` +
-        `🔓 <a href="#" class="btn-plus">Clique aqui para assinar a versão Plus</a> e liberar mensagens ilimitadas.`,
+        `🔓 <button class="btn-plus">Clique aqui para assinar a versão Plus</button> e liberar mensagens ilimitadas.`,
         'bot'
       );
     } else if (data.reply) {
@@ -114,35 +116,9 @@ async function sendMessage() {
   }
 }
 
-// ─── FLUXO DE CHECKOUT MERCADO PAGO ────────────────────────
-async function goToMP() {
-  const user = firebase.auth().currentUser;
-  if (!user) {
-    return appendMessage(
-      `<strong>Assistente:</strong> Você precisa estar logado para assinar o Plus.`,
-      'bot'
-    );
-  }
-
-  const idToken = await user.getIdToken();
-  try {
-    const resp = await fetch('/api/create-preference', {
-      method:  'POST',
-      headers: {
-        'Content-Type':  'application/json',
-        'Authorization': 'Bearer ' + idToken
-      },
-      body: JSON.stringify({})
-    });
-    const { init_point } = await resp.json();
-    window.open(init_point, '_blank');
-  } catch (err) {
-    console.error('Erro criando preferência MP:', err);
-    appendMessage(
-      `<strong>Assistente:</strong> Ocorreu um erro ao iniciar o pagamento. Tente novamente mais tarde.`,
-      'bot'
-    );
-  }
+// ─── REDIRECIONAR PARA PLANOS ────────────────────────────
+function goToPlanos() {
+  window.location.href = 'planos.html';
 }
 
 // ─── LISTENERS GLOBAIS ────────────────────────────────────
@@ -154,17 +130,17 @@ input.addEventListener('keydown', (e) => {
   }
 });
 
-// Delegação de clique para .btn-plus (login, links e dinâmicos)
+// Delegação de clique para .btn-plus (todos levam a planos.html) e logout
 document.addEventListener('click', (e) => {
-  const plus = e.target.closest('.btn-plus');
-  if (plus) {
+  const planoBtn = e.target.closest('.btn-plus');
+  if (planoBtn) {
     e.preventDefault();
-    goToMP();
+    return goToPlanos();
   }
   const logoutBtn = e.target.closest('.logout-button');
   if (logoutBtn) {
     e.preventDefault();
-    logout();
+    return logout();
   }
 });
 
@@ -178,3 +154,4 @@ window.addEventListener('load', () => {
     );
   }, 1000);
 });
+```

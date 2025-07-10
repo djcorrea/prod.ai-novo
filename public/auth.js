@@ -64,6 +64,7 @@ window.signUp = async function () {
   try {
     // 1. Obter fingerprint do navegador
     const fingerprint = await getFingerprint();
+    console.log("Fingerprint:", fingerprint); // <-- Debug aqui!
 
     if (!fingerprint) {
       showError("Erro ao identificar seu navegador. Tente novamente.");

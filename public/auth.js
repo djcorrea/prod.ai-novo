@@ -86,7 +86,7 @@ window.signUp = async function () {
       return;
     }
 
-    // 2. Checa se fingerprint OU IP já estão cadastrados
+    // 2. Checa se fingerprint OU IP já estão cadastrados (leitura permitida a todos)
     const fpQuery = await db.collection("fingerprints").doc(fingerprint).get();
     const ipQuery = await db.collection("ips").doc(ip).get();
 
@@ -97,10 +97,10 @@ window.signUp = async function () {
       return;
     }
 
-    // 3. Cria o usuário (agora autenticado)
+    // 3. Cria o usuário (autentica para liberar gravação)
     const result  = await auth.createUserWithEmailAndPassword(email, password);
 
-    // 4. Salva fingerprint e IP (agora autorizado pelas regras de produção)
+    // 4. Salva fingerprint e IP (agora permitido pelas regras de produção)
     await db.collection("fingerprints").doc(fingerprint).set({
       email: email,
       ip: ip,
@@ -112,7 +112,7 @@ window.signUp = async function () {
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
 
-    // 5. (Opcional) Envia e-mail de verificação (pode comentar/remover se não for usar)
+    // 5. Envia e-mail de verificação (mas pode cair no spam/ser bloqueado por limite!)
     try {
       await result.user.sendEmailVerification({
         url: 'https://prod-ai-novo.vercel.app/login.html',

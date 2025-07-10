@@ -1,78 +1,75 @@
-// Inicialização do Firebase
+// auth.js
+
+// 🛠️ Inicialização do Firebase (com storageBucket corrigido)
 const firebaseConfig = {
-  apiKey: "SUA_API_KEY",
-  authDomain: "SEU_PROJETO.firebaseapp.com",
-  projectId: "SEU_PROJETO",
-  // ... o restante das configs
+  apiKey:            "AIzaSyBKby0RdIOGorhrfBRMCWnL25peU3epGTw",
+  authDomain:        "prodai-58436.firebaseapp.com",
+  projectId:         "prodai-58436",
+  storageBucket:     "prodai-58436.appspot.com",      // <— alterado aqui
+  messagingSenderId: "801631191322",
+  appId:             "1:801631191322:web:80e3d29cf7468331652ca3",
+  measurementId:     "G-MBDHDYN6Z0"
 };
+
 firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 
-const emailInput    = document.getElementById('email');
-const passwordInput = document.getElementById('password');
-const errorEl       = document.getElementById('error-message');
-
-// Mostra mensagem de erro/alerta
-function showError(msg) {
-  errorEl.textContent    = msg;
-  errorEl.style.display  = 'block';
-}
-
-// Esconde mensagem
-function clearError() {
-  errorEl.textContent   = '';
-  errorEl.style.display = 'none';
-}
-
-// Cadastrar usuário e enviar email de verificação
-async function signUp() {
-  clearError();
-  const email = emailInput.value.trim();
-  const pass  = passwordInput.value;
-
-  if (!email || !pass) {
-    return showError('Preencha email e senha.');
-  }
-  if (pass.length < 6) {
-    return showError('A senha deve ter no mínimo 6 caracteres.');
-  }
+// 🔐 LOGIN
+window.login = async function () {
+  const email    = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
 
   try {
-    const userCred = await firebase.auth().createUserWithEmailAndPassword(email, pass);
-    await userCred.user.sendEmailVerification();
-    alert('Cadastro realizado! Verifique seu e-mail para ativar a conta.');
-    emailInput.value = '';
-    passwordInput.value = '';
-  } catch (err) {
-    console.error(err);
-    showError(err.message);
+    const result  = await auth.signInWithEmailAndPassword(email, password);
+    const idToken = await result.user.getIdToken();
+    localStorage.setItem("user", JSON.stringify(result.user));
+    localStorage.setItem("idToken", idToken);
+    window.location.href = "index.html";
+  } catch (error) {
+    alert("Erro ao fazer login: " + error.message);
+    console.error(error);
   }
-}
+};
 
-// Fazer login só se o email estiver verificado
-async function login() {
-  clearError();
-  const email = emailInput.value.trim();
-  const pass  = passwordInput.value;
-
-  if (!email || !pass) {
-    return showError('Preencha email e senha.');
-  }
+// 👤 REGISTRO
+window.register = async function () {
+  const email    = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
 
   try {
-    const userCred = await firebase.auth().signInWithEmailAndPassword(email, pass);
-    if (!userCred.user.emailVerified) {
-      await firebase.auth().signOut();
-      return showError('Verifique seu e-mail antes de entrar.');
-    }
-    // login OK, leva ao chat
-    window.location.href = 'index.html';
-  } catch (err) {
-    console.error(err);
-    showError(err.message);
+    const result  = await auth.createUserWithEmailAndPassword(email, password);
+    const idToken = await result.user.getIdToken();
+    localStorage.setItem("user", JSON.stringify(result.user));
+    localStorage.setItem("idToken", idToken);
+    window.location.href = "index.html";
+  } catch (error) {
+    alert("Erro ao cadastrar: " + error.message);
+    console.error(error);
   }
-}
+};
 
-// Dá foco no email ao carregar
-window.addEventListener('load', () => {
-  emailInput.focus();
+// 🔓 LOGOUT
+window.logout = async function () {
+  await auth.signOut();
+  localStorage.removeItem("user");
+  localStorage.removeItem("idToken");
+  window.location.href = "login.html";
+};
+
+// 🔄 VERIFICAÇÃO DE SESSÃO
+auth.onAuthStateChanged(async (user) => {
+  const isLoginPage = window.location.pathname.includes("login.html");
+
+  if (!user && !isLoginPage) {
+    window.location.href = "login.html";
+  }
+
+  if (user && isLoginPage) {
+    window.location.href = "index.html";
+  }
+
+  if (user) {
+    const idToken = await user.getIdToken();
+    localStorage.setItem("idToken", idToken);
+  }
 });

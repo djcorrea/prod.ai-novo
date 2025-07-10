@@ -9,140 +9,151 @@
   <style>
     /* RESET */
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    /* VARIÁVEIS DE TEMA */
+    :root {
+      --bg-dark: #0a0a14;
+      --panel-bg: #12121b;
+      --border-color: rgba(139,92,246,0.6);
+      --glow-color: rgba(139,92,246,0.4);
+      --accent: #8b5cf6;
+      --accent-hover: #7c3aed;
+      --text-light: #e5e5e5;
+      --text-muted: #a1a1aa;
+      --radius: 16px;
+      --transition: 0.3s ease;
+    }
+
+    /* BODY */
     body {
       font-family: 'Inter', sans-serif;
-      background: radial-gradient(circle at bottom left, #0b0f1e, #000);
-      color: #fff;
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:2rem;
+      background: radial-gradient(circle at top left, #0a0a14, #000);
+      color: var(--text-light);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
     }
-    /* Container geral */
+
+    /* CONTAINER PRINCIPAL */
     .container {
-      background: rgba(20,20,30,0.6);
-      border-radius: 20px;
-      padding: 3rem 2rem 2rem;
-      max-width: 900px;
+      background: var(--panel-bg);
+      border-radius: var(--radius);
+      padding: 2.5rem 2rem 1rem;
+      max-width: 800px;
       width: 100%;
-      box-shadow: 0 0 30px rgba(139,92,246,0.4);
-      backdrop-filter: blur(8px);
+      box-shadow: 0 0 30px var(--glow-color);
     }
-    /* Título com degradê neon */
-    h1 {
-      font-size:2.5rem;
-      text-align:center;
-      margin-bottom: 0.25rem;
-      background: linear-gradient(90deg, #8b5cf6, #4f46e5, #3b82f6);
+
+    /* TÍTULO */
+    .container h1 {
+      font-size: 2.5rem;
+      text-align: center;
+      background: linear-gradient(90deg, #a78bfa, #c4b5fd);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      margin-bottom: 0.25rem;
     }
-    p.subtitle {
-      text-align:center;
-      color:#a1a1aa;
-      margin-bottom:2rem;
+    .container p.subtitle {
+      text-align: center;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
     }
-    /* Grid de cards */
+
+    /* GRID DE CARDS */
     .plans {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px,1fr));
+      grid-template-columns: repeat(auto-fit, minmax(280px,1fr));
       gap: 1.5rem;
     }
-    /* Card base */
+
+    /* CARD */
     .plan-card {
-      background: rgba(255,255,255,0.03);
-      border-radius: 16px;
-      padding:2rem 1.5rem;
-      position:relative;
-      overflow:hidden;
-      border:2px solid transparent;
-      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+      background: var(--panel-bg);
+      border: 2px solid transparent;
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      position: relative;
+      overflow: hidden;
+      transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
     }
-    .plan-card::before {
-      content:'';
-      position:absolute;
-      top:-50%; left:-50%;
-      width:200%; height:200%;
-      background: linear-gradient(60deg, #8b5cf6, #3b82f6, #06b6d4, #8b5cf6);
-      background-size: 400% 400%;
-      animation: gradient-anim 6s ease infinite;
-      z-index:0;
+    .plan-card:hover {
+      border-color: var(--border-color);
+      box-shadow: 0 8px 20px var(--glow-color);
+      transform: translateY(-4px);
     }
-    .plan-card > * { position: relative; z-index:1; }
-    @keyframes gradient-anim {
-      0%{background-position:0% 50%;}
-      50%{background-position:100% 50%;}
-      100%{background-position:0% 50%;}
+
+    /* BADGE */
+    .plan-card.popular::before {
+      content: 'Mais Popular';
+      position: absolute;
+      top: -10px; right: -10px;
+      background: var(--accent);
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      transform: rotate(15deg);
     }
-    /* Overlay escuro para o conteúdo */
-    .plan-card .inner {
-      background: rgba(0,0,0,0.6);
-      border-radius:14px;
-      padding:1.5rem;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      text-align:center;
+
+    /* CONTEÚDO DO CARD */
+    .plan-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
     }
-    /* Destaque plano popular */
-    .plan-card.popular .inner {
-      box-shadow: 0 0 20px rgba(139,92,246,0.6);
-    }
-    .plan-card.popular .badge {
-      position:absolute;
-      top: -12px;
-      right: -12px;
-      background:#8b5cf6;
-      color:#fff;
-      padding:6px 12px;
-      font-size:0.75rem;
-      font-weight:600;
-      border-radius:12px;
-      z-index:2;
-    }
-    /* Título e preço */
-    .plan-title { font-size:1.5rem; font-weight:600; margin-bottom:0.5rem; }
     .plan-price {
-      font-size:2.5rem; font-weight:700; margin-bottom:1rem;
+      font-size: 2.25rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      line-height: 1;
+      color: #fff;
     }
-    .plan-price span { font-size:1rem; font-weight:400; color:#a1a1aa; margin-left:4px; }
-    /* Lista de itens */
+    .plan-price span {
+      font-size: 1rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      margin-left: 4px;
+    }
     .plan-features {
-      list-style:none;
-      margin-bottom:1.5rem;
-      width:100%;
-      text-align:left;
+      list-style: none;
+      margin-bottom: 1.5rem;
+      text-align: left;
+      padding-left: 0;
     }
     .plan-features li {
-      margin-bottom:0.75rem;
-      padding-left:1.5rem;
-      position:relative;
-      font-size:0.95rem;
+      position: relative;
+      padding-left: 1.5rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.95rem;
+      color: var(--text-light);
     }
     .plan-features li::before {
-      content:'✔︎';
-      position:absolute;
-      left:0;
-      top:0;
-      color:#3b82f6;
-      font-size:1.1rem;
+      content: '✔︎';
+      position: absolute;
+      left: 0; top: 0;
+      color: var(--accent);
+      font-size: 1rem;
     }
-    /* Botão neon */
+
+    /* BOTÃO */
     .plan-button {
-      display:inline-block;
-      padding:0.75rem 1.5rem;
-      background: linear-gradient(90deg, #8b5cf6, #3b82f6);
-      border:none;
-      border-radius:12px;
-      color:#fff;
-      font-size:1rem;
-      font-weight:500;
-      text-decoration:none;
-      transition: filter 0.3s, transform 0.3s;
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background: var(--accent);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 500;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      text-decoration: none;
+      transition: background var(--transition), transform var(--transition);
     }
     .plan-button:hover {
-      filter: brightness(1.2);
+      background: var(--accent-hover);
       transform: translateY(-2px);
     }
   </style>
@@ -154,33 +165,28 @@
     <div class="plans">
       <!-- Free -->
       <div class="plan-card">
-        <div class="inner">
-          <h2 class="plan-title">Free</h2>
-          <p class="plan-price">R$0<span>/mês</span></p>
-          <ul class="plan-features">
-            <li>Acesso ao chatbot de produção</li>
-            <li>3 mensagens por dia</li>
-            <li>Respostas básicas</li>
-            <li>Sem personalização</li>
-          </ul>
-          <a href="#" class="plan-button">Usar grátis</a>
-        </div>
+        <h2 class="plan-title">Free</h2>
+        <p class="plan-price">R$0<span>/mês</span></p>
+        <ul class="plan-features">
+          <li>Acesso ao chatbot de produção</li>
+          <li>3 mensagens por dia</li>
+          <li>Respostas básicas</li>
+          <li>Sem personalização</li>
+        </ul>
+        <a href="#" class="plan-button">Usar grátis</a>
       </div>
       <!-- Plus -->
       <div class="plan-card popular">
-        <div class="badge">Mais Popular</div>
-        <div class="inner">
-          <h2 class="plan-title">Prod.AI Plus</h2>
-          <p class="plan-price">R$19,90<span>/mês</span></p>
-          <ul class="plan-features">
-            <li>Mensagens ilimitadas</li>
-            <li>Respostas mais avançadas</li>
-            <li>Análise de mix/master e melodias</li>
-            <li>Dicas personalizadas para suas tracks</li>
-            <li>Prioridade no servidor</li>
-          </ul>
-          <a href="#" class="plan-button">Assinar agora</a>
-        </div>
+        <h2 class="plan-title">Prod.AI Plus</h2>
+        <p class="plan-price">R$19,90<span>/mês</span></p>
+        <ul class="plan-features">
+          <li>Mensagens ilimitadas</li>
+          <li>Respostas mais avançadas</li>
+          <li>Análise de mix/master e melodias</li>
+          <li>Dicas personalizadas para suas tracks</li>
+          <li>Prioridade no servidor</li>
+        </ul>
+        <a href="#" class="plan-button">Assinar agora</a>
       </div>
     </div>
   </div>

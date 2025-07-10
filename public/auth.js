@@ -1,3 +1,5 @@
+// auth.js
+
 // Inicialização do Firebase (só inicializa uma vez)
 const firebaseConfig = {
   apiKey:            "AIzaSyBKby0RdIOGorhrfBRMCWnL25peU3epGTw",
@@ -13,6 +15,17 @@ if (!firebase.apps.length) {
 }
 const auth = firebase.auth();
 
+// Utilitário para mostrar erros bonitinho
+function showError(message) {
+  const el = document.getElementById("error-message");
+  if (el) {
+    el.innerText = message;
+    el.style.display = "block";
+  } else {
+    alert(message);
+  }
+}
+
 // 🔐 LOGIN
 window.login = async function () {
   const email    = document.getElementById("email").value.trim();
@@ -20,12 +33,20 @@ window.login = async function () {
 
   try {
     const result  = await auth.signInWithEmailAndPassword(email, password);
+
+    // Checa se o email foi verificado
+    if (!result.user.emailVerified) {
+      showError("⚠️ Por favor, confirme seu e-mail antes de acessar. Verifique sua caixa de entrada (e spam).");
+      await auth.signOut();
+      return;
+    }
+
     const idToken = await result.user.getIdToken();
     localStorage.setItem("user", JSON.stringify(result.user));
     localStorage.setItem("idToken", idToken);
     window.location.href = "index.html";
   } catch (error) {
-    alert("Erro ao fazer login: " + error.message);
+    showError("Erro ao fazer login: " + error.message);
     console.error(error);
   }
 };
@@ -37,12 +58,16 @@ window.signUp = async function () {
 
   try {
     const result  = await auth.createUserWithEmailAndPassword(email, password);
-    const idToken = await result.user.getIdToken();
-    localStorage.setItem("user", JSON.stringify(result.user));
-    localStorage.setItem("idToken", idToken);
-    window.location.href = "index.html";
+    // Envia e-mail de verificação
+    await result.user.sendEmailVerification();
+
+    showError(
+      "Cadastro realizado! Um e-mail de confirmação foi enviado. Verifique sua caixa de entrada (e spam). Só será possível acessar após confirmar seu e-mail."
+    );
+
+    await auth.signOut(); // Força sair para impedir acesso sem confirmação
   } catch (error) {
-    alert("Erro ao cadastrar: " + error.message);
+    showError("Erro ao cadastrar: " + error.message);
     console.error(error);
   }
 };
@@ -65,6 +90,12 @@ auth.onAuthStateChanged(async (user) => {
     return window.location.href = "login.html";
   }
   if (user && isLoginPage) {
+    // Não redireciona se e-mail não foi confirmado
+    if (!user.emailVerified) {
+      showError("⚠️ Confirme seu e-mail antes de acessar!");
+      await auth.signOut();
+      return;
+    }
     return window.location.href = "index.html";
   }
   if (user) {

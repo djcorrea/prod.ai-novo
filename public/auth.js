@@ -1,15 +1,16 @@
-// Inicialização do Firebase
+// Inicialização do Firebase (só inicializa uma vez)
 const firebaseConfig = {
   apiKey:            "AIzaSyBKby0RdIOGorhrfBRMCWnL25peU3epGTw",
   authDomain:        "prodai-58436.firebaseapp.com",
   projectId:         "prodai-58436",
-  storageBucket:     "prodai-58436.appspot.com",   // Corrigido aqui
+  storageBucket:     "prodai-58436.appspot.com",
   messagingSenderId: "801631191322",
   appId:             "1:801631191322:web:80e3d29cf7468331652ca3",
   measurementId:     "G-MBDHDYN6Z0"
 };
-
-firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 const auth = firebase.auth();
 
 // 🔐 LOGIN
@@ -30,7 +31,7 @@ window.login = async function () {
 };
 
 // 👤 REGISTRO
-window.register = async function () {
+window.signUp = async function () {
   const email    = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
 
@@ -46,6 +47,9 @@ window.register = async function () {
   }
 };
 
+// (opcional) manter alias se precisar chamar também via register()
+window.register = window.signUp;
+
 // 🔓 LOGOUT
 window.logout = async function () {
   await auth.signOut();
@@ -58,10 +62,10 @@ window.logout = async function () {
 auth.onAuthStateChanged(async (user) => {
   const isLoginPage = window.location.pathname.includes("login.html");
   if (!user && !isLoginPage) {
-    window.location.href = "login.html";
+    return window.location.href = "login.html";
   }
   if (user && isLoginPage) {
-    window.location.href = "index.html";
+    return window.location.href = "index.html";
   }
   if (user) {
     const idToken = await user.getIdToken();

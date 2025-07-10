@@ -7,14 +7,21 @@
   <link rel="stylesheet" href="style.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
-    /* Ajustes específicos só para esta página */
+    /* Ajustes específicos para a página de agradecimento */
     .container {
       text-align: center;
     }
-    .header { margin-bottom: 1.5rem; }
+    .header {
+      margin-bottom: 1.5rem;
+    }
     .subtitle {
       color: rgba(255,255,255,0.85);
       margin-bottom: 2rem;
+      line-height: 1.4;
+    }
+    .btn-chat {
+      display: inline-block;
+      margin-top: 2rem;
     }
   </style>
 </head>
@@ -24,7 +31,10 @@
   <div class="container fade-in">
     <header class="header">
       <h1 class="logo">Obrigado!</h1>
-      <p class="subtitle">Sua assinatura <strong>Prod.AI Plus</strong> foi confirmada com sucesso.</p>
+      <p class="subtitle">
+        Sua assinatura <strong>Prod.AI Plus</strong><br/>
+        foi confirmada com sucesso.
+      </p>
     </header>
 
     <p class="subtitle">
@@ -32,7 +42,18 @@
       de produção musical. Aproveite! 🚀
     </p>
 
-    <a href="index.html" class="btn-plus">Ir para o Chat</a>
+    <!-- Botão para voltar ao chat, onde o script já libera o modo Plus -->
+    <a 
+      href="index.html" 
+      class="btn-plus btn-chat" 
+      target="_blank" 
+      rel="noopener noreferrer"
+    >
+      Voltar para o Chat
+    </a>
   </div>
+
+  <!-- Se o seu chat usa script.js para inicializar e detectar isPlus, mantenha a importação -->
+  <script src="script.js"></script>
 </body>
 </html>

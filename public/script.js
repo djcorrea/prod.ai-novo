@@ -1,6 +1,6 @@
 // script.js
 
-// Elementos do DOM
+// ─── ELEMENTOS DO DOM ─────────────────────────────────────
 const chatbox         = document.getElementById('chatbox');
 const input           = document.getElementById('user-input');
 const sendBtn         = document.getElementById('sendBtn');
@@ -8,7 +8,7 @@ const typingIndicator = document.getElementById('typingIndicator');
 
 let conversationHistory = [];
 
-// Função para adicionar mensagens ao chat
+// ─── FUNÇÕES DE CHAT ──────────────────────────────────────
 function appendMessage(content, className) {
   const messageDiv     = document.createElement('div');
   messageDiv.className = `message ${className}`;
@@ -22,7 +22,6 @@ function appendMessage(content, className) {
   chatbox.scrollTop = chatbox.scrollHeight;
 }
 
-// Indicador de digitação
 function showTypingIndicator() {
   typingIndicator.style.display = 'flex';
   chatbox.scrollTop              = chatbox.scrollHeight;
@@ -31,7 +30,6 @@ function hideTypingIndicator() {
   typingIndicator.style.display = 'none';
 }
 
-// Função principal de envio de mensagem
 async function sendMessage() {
   const message = input.value.trim();
   if (!message || sendBtn.disabled) return;
@@ -42,14 +40,17 @@ async function sendMessage() {
 
   conversationHistory.push({ role: 'user', content: message });
 
-  sendBtn.disabled     = true;
-  sendBtn.innerHTML    = 'Enviando...';
+  sendBtn.disabled  = true;
+  sendBtn.innerHTML = 'Enviando...';
   showTypingIndicator();
 
   try {
     const user = firebase.auth().currentUser;
     if (!user) {
-      appendMessage(`<strong>Assistente:</strong> Você precisa estar logado para usar o chat.`, 'bot');
+      appendMessage(
+        `<strong>Assistente:</strong> Você precisa estar logado para usar o chat.`,
+        'bot'
+      );
       hideTypingIndicator();
       sendBtn.disabled  = false;
       sendBtn.innerHTML = 'Enviar';
@@ -57,8 +58,7 @@ async function sendMessage() {
     }
 
     const idToken = await user.getIdToken();
-
-    const res = await fetch('/api/chat', {
+    const res     = await fetch('/api/chat', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ message, conversationHistory, idToken })
@@ -66,10 +66,9 @@ async function sendMessage() {
 
     const rawText = await res.text();
     let data;
-
     try {
       data = JSON.parse(rawText);
-    } catch (e) {
+    } catch {
       hideTypingIndicator();
       console.error("Resposta inválida do servidor:", rawText);
       appendMessage(
@@ -92,14 +91,19 @@ async function sendMessage() {
       appendMessage(`<strong>Assistente:</strong> ${data.reply}`, 'bot');
       conversationHistory.push({ role: 'assistant', content: data.reply });
     } else {
-      appendMessage(`<strong>Assistente:</strong> Ocorreu um erro inesperado.`, 'bot');
+      appendMessage(
+        `<strong>Assistente:</strong> Ocorreu um erro inesperado.`,
+        'bot'
+      );
       console.error('Erro na resposta:', data);
     }
-
   } catch (err) {
     hideTypingIndicator();
     console.error(err);
-    appendMessage(`<strong>Assistente:</strong> Erro ao se conectar com o servidor.`, 'bot');
+    appendMessage(
+      `<strong>Assistente:</strong> Erro ao se conectar com o servidor.`,
+      'bot'
+    );
   } finally {
     sendBtn.disabled  = false;
     sendBtn.innerHTML = `
@@ -110,11 +114,14 @@ async function sendMessage() {
   }
 }
 
-// Função para iniciar checkout no Mercado Pago
+// ─── FLUXO DE CHECKOUT MERCADO PAGO ────────────────────────
 async function goToMP() {
   const user = firebase.auth().currentUser;
   if (!user) {
-    return appendMessage(`<strong>Assistente:</strong> Você precisa estar logado para assinar o Plus.`, 'bot');
+    return appendMessage(
+      `<strong>Assistente:</strong> Você precisa estar logado para assinar o Plus.`,
+      'bot'
+    );
   }
 
   const idToken = await user.getIdToken();
@@ -131,11 +138,15 @@ async function goToMP() {
     window.open(init_point, '_blank');
   } catch (err) {
     console.error('Erro criando preferência MP:', err);
-    appendMessage(`<strong>Assistente:</strong> Ocorreu um erro ao iniciar o pagamento. Tente novamente mais tarde.`, 'bot');
+    appendMessage(
+      `<strong>Assistente:</strong> Ocorreu um erro ao iniciar o pagamento. Tente novamente mais tarde.`,
+      'bot'
+    );
   }
 }
 
-// Listeners
+// ─── LISTENERS GLOBAIS ────────────────────────────────────
+// Enviar mensagem com Enter
 input.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault();
@@ -143,6 +154,21 @@ input.addEventListener('keydown', (e) => {
   }
 });
 
+// Delegação de clique para .btn-plus (login, links e dinâmicos)
+document.addEventListener('click', (e) => {
+  const plus = e.target.closest('.btn-plus');
+  if (plus) {
+    e.preventDefault();
+    goToMP();
+  }
+  const logoutBtn = e.target.closest('.logout-button');
+  if (logoutBtn) {
+    e.preventDefault();
+    logout();
+  }
+});
+
+// Saudação inicial
 window.addEventListener('load', () => {
   input.focus();
   setTimeout(() => {
@@ -151,12 +177,4 @@ window.addEventListener('load', () => {
       'bot'
     );
   }, 1000);
-
-  // Botão Plus → checkout MP
-  const btnPlus = document.querySelector('.btn-plus');
-  if (btnPlus) btnPlus.addEventListener('click', goToMP);
-
-  // Botão Sair
-  const btnLogout = document.querySelector('.logout-button');
-  if (btnLogout) btnLogout.addEventListener('click', logout);
 });

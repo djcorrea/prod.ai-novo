@@ -12,7 +12,8 @@
 
     /* VARIÁVEIS DE TEMA */
     :root {
-      --bg-body: #090911;
+      --bg-body-start: #0b0f1e;
+      --bg-body-end: #000000;
       --bg-container: #12121b;
       --bg-card: #1e1e2a;
       --border-color: rgba(139,92,246,0.6);
@@ -29,7 +30,8 @@
 
     body {
       font-family: 'Inter', sans-serif;
-      background: var(--bg-body);
+      /* Fundo radial igual ao chatbot */
+      background: radial-gradient(circle at top left, var(--bg-body-start), var(--bg-body-end));
       color: var(--text-light);
       min-height: 100vh;
       display: flex;
@@ -180,9 +182,9 @@
           <li>Respostas básicas</li>
           <li>Sem personalização</li>
         </ul>
-        <!-- Atualize o href para onde for necessário -->
         <a href="/signup?plan=free" class="plan-button">Usar grátis</a>
       </div>
+
       <!-- Plus -->
       <div class="plan-card popular">
         <h2 class="plan-title">Prod.AI Plus</h2>
@@ -194,8 +196,8 @@
           <li>Dicas personalizadas para suas tracks</li>
           <li>Prioridade no servidor</li>
         </ul>
-        <!-- AQUI: link direto para o checkout -->
-        <a href="/checkout?plan=plus" class="plan-button">Assinar agora</a>
+        <!-- Link do checkout Mercado Pago -->
+        <a href="https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=2c93808497eec1c00197f19da3d600f6" class="plan-button">Assinar agora</a>
       </div>
     </div>
   </div>

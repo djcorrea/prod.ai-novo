@@ -36,6 +36,17 @@ async function getFingerprint() {
   return null;
 }
 
+// Função para obter o IP público do usuário
+async function getIP() {
+  try {
+    const res = await fetch('https://api.ipify.org?format=json');
+    const data = await res.json();
+    return data.ip;
+  } catch {
+    return null;
+  }
+}
+
 // 🔐 LOGIN
 window.login = async function () {
   const email    = document.getElementById("email").value.trim();
@@ -66,48 +77,56 @@ window.signUp = async function () {
   const password = document.getElementById("password").value.trim();
 
   try {
+    // 1. Obter fingerprint e IP
     const fingerprint = await getFingerprint();
+    const ip = await getIP();
 
-    if (!fingerprint) {
-      showError("Erro ao identificar seu navegador. Tente novamente.");
+    if (!fingerprint || !ip) {
+      showError("Erro ao identificar seu navegador ou rede. Tente novamente.");
       return;
     }
 
-    // 1. Checa se já existe fingerprint no Firestore
+    // 2. Checa se fingerprint OU IP já estão cadastrados
     const fpQuery = await db.collection("fingerprints").doc(fingerprint).get();
+    const ipQuery = await db.collection("ips").doc(ip).get();
 
-    if (fpQuery.exists) {
+    if (fpQuery.exists || ipQuery.exists) {
       showError(
-        "Você já criou uma conta gratuita neste navegador. Faça login ou assine o plano Plus para criar outra conta."
+        "Você já criou uma conta gratuita neste dispositivo ou nesta rede. Faça login ou assine o plano Plus para criar outra conta."
       );
       return;
     }
 
-    // 2. Cria o usuário (agora ele já está autenticado)
+    // 3. Cria o usuário (agora autenticado)
     const result  = await auth.createUserWithEmailAndPassword(email, password);
 
-    // 3. Salva fingerprint no Firestore (agora vai funcionar com regras de produção)
+    // 4. Salva fingerprint e IP (agora autorizado pelas regras de produção)
     await db.collection("fingerprints").doc(fingerprint).set({
       email: email,
+      ip: ip,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    await db.collection("ips").doc(ip).set({
+      email: email,
+      fingerprint: fingerprint,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
 
-    // 4. Envia e-mail de verificação (garante que sempre aguarda o envio)
+    // 5. (Opcional) Envia e-mail de verificação (pode comentar/remover se não for usar)
     try {
       await result.user.sendEmailVerification({
         url: 'https://prod-ai-novo.vercel.app/login.html',
         handleCodeInApp: false,
         locale: 'pt'
       });
+      showError(
+        "Cadastro realizado! Um e-mail de confirmação foi enviado. Verifique sua caixa de entrada (e spam). Só será possível acessar após confirmar seu e-mail."
+      );
     } catch (err) {
-      showError("Erro ao enviar e-mail de verificação: " + (err.message || err));
+      showError("Cadastro realizado, mas não foi possível enviar o e-mail de confirmação: " + (err.message || err));
     }
 
-    showError(
-      "Cadastro realizado! Um e-mail de confirmação foi enviado. Verifique sua caixa de entrada (e spam). Só será possível acessar após confirmar seu e-mail."
-    );
-
-    // 5. Faz signOut para impedir login sem verificação
+    // 6. Faz signOut para impedir login sem verificação
     await auth.signOut();
 
   } catch (error) {

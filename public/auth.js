@@ -1,6 +1,5 @@
 // auth.js
 
-// Inicialização do Firebase (só inicializa uma vez)
 const firebaseConfig = {
   apiKey:            "AIzaSyBKby0RdIOGorhrfBRMCWnL25peU3epGTw",
   authDomain:        "prodai-58436.firebaseapp.com",
@@ -14,7 +13,7 @@ if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 const auth = firebase.auth();
-const db = firebase.firestore(); // Adiciona acesso ao Firestore
+const db = firebase.firestore();
 
 function showError(message) {
   const el = document.getElementById("error-message");
@@ -32,7 +31,7 @@ async function getFingerprint() {
     const fpPromise = FingerprintJS.load();
     const fp = await fpPromise;
     const result = await fp.get();
-    return result.visitorId; // fingerprint único do navegador
+    return result.visitorId;
   }
   return null;
 }
@@ -45,7 +44,6 @@ window.login = async function () {
   try {
     const result  = await auth.signInWithEmailAndPassword(email, password);
 
-    // Checa se o email foi verificado
     if (!result.user.emailVerified) {
       showError("⚠️ Por favor, confirme seu e-mail antes de acessar. Verifique sua caixa de entrada (e spam).");
       await auth.signOut();
@@ -68,7 +66,6 @@ window.signUp = async function () {
   const password = document.getElementById("password").value.trim();
 
   try {
-    // Obter o fingerprint antes de cadastrar
     const fingerprint = await getFingerprint();
 
     if (!fingerprint) {
@@ -76,7 +73,6 @@ window.signUp = async function () {
       return;
     }
 
-    // Consulta no Firestore para ver se já existe esse fingerprint
     const fpQuery = await db.collection("fingerprints").doc(fingerprint).get();
 
     if (fpQuery.exists) {
@@ -86,16 +82,13 @@ window.signUp = async function () {
       return;
     }
 
-    // Se não existe, prossegue com o cadastro
     const result  = await auth.createUserWithEmailAndPassword(email, password);
 
-    // Salva o fingerprint no Firestore (coleção 'fingerprints', doc = fingerprint)
     await db.collection("fingerprints").doc(fingerprint).set({
       email: email,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
 
-    // Envia e-mail de verificação
     await result.user.sendEmailVerification({
       url: 'https://prod-ai-novo.vercel.app/login.html',
       handleCodeInApp: false,
@@ -106,7 +99,7 @@ window.signUp = async function () {
       "Cadastro realizado! Um e-mail de confirmação foi enviado. Verifique sua caixa de entrada (e spam). Só será possível acessar após confirmar seu e-mail."
     );
 
-    await auth.signOut(); // Força sair para impedir acesso sem confirmação
+    await auth.signOut();
   } catch (error) {
     showError("Erro ao cadastrar: " + error.message);
     console.error(error);
@@ -115,17 +108,21 @@ window.signUp = async function () {
 
 window.register = window.signUp;
 
+// 🔓 LOGOUT
 window.logout = async function () {
-  await auth.signOut();
+  try {
+    await auth.signOut();
+  } catch (e) {}
   localStorage.removeItem("user");
   localStorage.removeItem("idToken");
   window.location.href = "login.html";
 };
 
+// 🔄 VERIFICAÇÃO DE SESSÃO
 auth.onAuthStateChanged(async (user) => {
   const isLoginPage = window.location.pathname.includes("login.html");
   if (!user && !isLoginPage) {
-    return window.location.href = "login.html";
+    window.location.href = "login.html";
   }
   if (user && isLoginPage) {
     if (!user.emailVerified) {
@@ -133,7 +130,7 @@ auth.onAuthStateChanged(async (user) => {
       await auth.signOut();
       return;
     }
-    return window.location.href = "index.html";
+    window.location.href = "index.html";
   }
   if (user) {
     const idToken = await user.getIdToken();

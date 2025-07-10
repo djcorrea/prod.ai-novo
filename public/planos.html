@@ -12,21 +12,30 @@
 
     /* VARIÁVEIS DE TEMA */
     :root {
-      --bg-dark: #0a0a14;
-      --panel-bg: #12121b;
+      /* fundos */
+      --bg-body: #090911;
+      --bg-container: #12121b;
+      --bg-card: #1e1e2a;
+      /* bordas e glow */
       --border-color: rgba(139,92,246,0.6);
       --glow-color: rgba(139,92,246,0.4);
+      /* texto */
+      --text-light: #e5e5e5;
+      --text-muted: #8f8f9f;
+      /* degradê do título */
+      --gradient-start: #8b5cf6;
+      --gradient-end: #3b82f6;
+      /* botões */
       --accent: #8b5cf6;
       --accent-hover: #7c3aed;
-      --text-light: #e5e5e5;
-      --text-muted: #a1a1aa;
+      /* gerais */
       --radius: 16px;
       --transition: 0.3s ease;
     }
 
     body {
       font-family: 'Inter', sans-serif;
-      background: radial-gradient(circle at top left, #0a0a14, #000);
+      background: var(--bg-body);
       color: var(--text-light);
       min-height: 100vh;
       display: flex;
@@ -36,7 +45,7 @@
     }
 
     .container {
-      background: var(--panel-bg);
+      background: var(--bg-container);
       border-radius: var(--radius);
       padding: 2.5rem 2rem 1rem;
       max-width: 800px;
@@ -47,43 +56,41 @@
     .container h1 {
       font-size: 2.5rem;
       text-align: center;
-      background: linear-gradient(90deg, #a78bfa, #c4b5fd);
+      background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 0.25rem;
     }
+
     .container p.subtitle {
       text-align: center;
       color: var(--text-muted);
       margin-bottom: 2rem;
     }
 
-    /* usa flex pra facilitar a divisória */
     .plans {
       display: flex;
-      gap: 0; /* divisória será feita no primeiro card */
+      gap: 0;
     }
 
     .plan-card {
-      background: var(--panel-bg);
-      border: 2px solid transparent;
+      background: var(--bg-card);
       border-radius: var(--radius);
       padding: 1.5rem;
-      position: relative;
-      overflow: hidden;
-      transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
       flex: 1;
+      position: relative;
+      transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
     }
     .plan-card:hover {
-      border-color: var(--border-color);
+      border: 2px solid var(--border-color);
       box-shadow: 0 8px 20px var(--glow-color);
       transform: translateY(-4px);
     }
 
-    /* divisória fina entre os cards */
+    /* divisória sutil */
     .plan-card:first-child {
-      padding-right: 2rem;
       margin-right: 2rem;
+      padding-right: 2rem;
       border-right: 1px solid var(--border-color);
     }
 
@@ -104,25 +111,32 @@
       font-size: 1.5rem;
       font-weight: 600;
       margin-bottom: 0.5rem;
+      color: #fff;
     }
+
     .plan-price {
       font-size: 2.25rem;
       font-weight: 700;
       margin-bottom: 1rem;
       line-height: 1;
-      color: #fff;
+      background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
     .plan-price span {
       font-size: 1rem;
       font-weight: 400;
       color: var(--text-muted);
       margin-left: 4px;
+      background: none;
+      -webkit-text-fill-color: var(--text-muted);
     }
+
     .plan-features {
       list-style: none;
       margin-bottom: 1.5rem;
-      text-align: left;
       padding-left: 0;
+      text-align: left;
     }
     .plan-features li {
       position: relative;

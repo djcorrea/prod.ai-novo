@@ -24,7 +24,6 @@
       --transition: 0.3s ease;
     }
 
-    /* BODY */
     body {
       font-family: 'Inter', sans-serif;
       background: radial-gradient(circle at top left, #0a0a14, #000);
@@ -36,7 +35,6 @@
       padding: 2rem;
     }
 
-    /* CONTAINER PRINCIPAL */
     .container {
       background: var(--panel-bg);
       border-radius: var(--radius);
@@ -46,7 +44,6 @@
       box-shadow: 0 0 30px var(--glow-color);
     }
 
-    /* TÍTULO */
     .container h1 {
       font-size: 2.5rem;
       text-align: center;
@@ -61,14 +58,12 @@
       margin-bottom: 2rem;
     }
 
-    /* GRID DE CARDS */
+    /* usa flex pra facilitar a divisória */
     .plans {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px,1fr));
-      gap: 1.5rem;
+      display: flex;
+      gap: 0; /* divisória será feita no primeiro card */
     }
 
-    /* CARD */
     .plan-card {
       background: var(--panel-bg);
       border: 2px solid transparent;
@@ -77,6 +72,7 @@
       position: relative;
       overflow: hidden;
       transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+      flex: 1;
     }
     .plan-card:hover {
       border-color: var(--border-color);
@@ -84,7 +80,13 @@
       transform: translateY(-4px);
     }
 
-    /* BADGE */
+    /* divisória fina entre os cards */
+    .plan-card:first-child {
+      padding-right: 2rem;
+      margin-right: 2rem;
+      border-right: 1px solid var(--border-color);
+    }
+
     .plan-card.popular::before {
       content: 'Mais Popular';
       position: absolute;
@@ -98,7 +100,6 @@
       transform: rotate(15deg);
     }
 
-    /* CONTEÚDO DO CARD */
     .plan-title {
       font-size: 1.5rem;
       font-weight: 600;
@@ -138,7 +139,6 @@
       font-size: 1rem;
     }
 
-    /* BOTÃO */
     .plan-button {
       display: inline-block;
       padding: 0.75rem 1.5rem;

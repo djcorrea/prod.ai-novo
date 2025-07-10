@@ -12,23 +12,17 @@
 
     /* VARIÁVEIS DE TEMA */
     :root {
-      /* fundos */
       --bg-body: #090911;
       --bg-container: #12121b;
       --bg-card: #1e1e2a;
-      /* bordas e glow */
       --border-color: rgba(139,92,246,0.6);
       --glow-color: rgba(139,92,246,0.4);
-      /* texto */
       --text-light: #e5e5e5;
       --text-muted: #8f8f9f;
-      /* degradê do título */
       --gradient-start: #8b5cf6;
       --gradient-end: #3b82f6;
-      /* botões */
       --accent: #8b5cf6;
       --accent-hover: #7c3aed;
-      /* gerais */
       --radius: 16px;
       --transition: 0.3s ease;
     }
@@ -128,7 +122,6 @@
       font-weight: 400;
       color: var(--text-muted);
       margin-left: 4px;
-      background: none;
       -webkit-text-fill-color: var(--text-muted);
     }
 
@@ -187,7 +180,8 @@
           <li>Respostas básicas</li>
           <li>Sem personalização</li>
         </ul>
-        <a href="#" class="plan-button">Usar grátis</a>
+        <!-- Atualize o href para onde for necessário -->
+        <a href="/signup?plan=free" class="plan-button">Usar grátis</a>
       </div>
       <!-- Plus -->
       <div class="plan-card popular">
@@ -200,7 +194,8 @@
           <li>Dicas personalizadas para suas tracks</li>
           <li>Prioridade no servidor</li>
         </ul>
-        <a href="#" class="plan-button">Assinar agora</a>
+        <!-- AQUI: link direto para o checkout -->
+        <a href="/checkout?plan=plus" class="plan-button">Assinar agora</a>
       </div>
     </div>
   </div>

@@ -73,6 +73,7 @@ window.signUp = async function () {
       return;
     }
 
+    // 1. Checa se já existe fingerprint no Firestore
     const fpQuery = await db.collection("fingerprints").doc(fingerprint).get();
 
     if (fpQuery.exists) {
@@ -82,24 +83,33 @@ window.signUp = async function () {
       return;
     }
 
+    // 2. Cria o usuário (agora ele já está autenticado)
     const result  = await auth.createUserWithEmailAndPassword(email, password);
 
+    // 3. Salva fingerprint no Firestore (agora vai funcionar com regras de produção)
     await db.collection("fingerprints").doc(fingerprint).set({
       email: email,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
 
-    await result.user.sendEmailVerification({
-      url: 'https://prod-ai-novo.vercel.app/login.html',
-      handleCodeInApp: false,
-      locale: 'pt'
-    });
+    // 4. Envia e-mail de verificação (garante que sempre aguarda o envio)
+    try {
+      await result.user.sendEmailVerification({
+        url: 'https://prod-ai-novo.vercel.app/login.html',
+        handleCodeInApp: false,
+        locale: 'pt'
+      });
+    } catch (err) {
+      showError("Erro ao enviar e-mail de verificação: " + (err.message || err));
+    }
 
     showError(
       "Cadastro realizado! Um e-mail de confirmação foi enviado. Verifique sua caixa de entrada (e spam). Só será possível acessar após confirmar seu e-mail."
     );
 
+    // 5. Faz signOut para impedir login sem verificação
     await auth.signOut();
+
   } catch (error) {
     showError("Erro ao cadastrar: " + error.message);
     console.error(error);

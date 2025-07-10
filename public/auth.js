@@ -36,17 +36,6 @@ async function getFingerprint() {
   return null;
 }
 
-// Função para obter o IP público do usuário
-async function getIP() {
-  try {
-    const res = await fetch('https://api.ipify.org?format=json');
-    const data = await res.json();
-    return data.ip;
-  } catch {
-    return null;
-  }
-}
-
 // 🔐 LOGIN
 window.login = async function () {
   const email    = document.getElementById("email").value.trim();
@@ -55,7 +44,7 @@ window.login = async function () {
   try {
     const result  = await auth.signInWithEmailAndPassword(email, password);
 
-    // NÃO há checagem de e-mail verificado aqui
+    // Não faz checagem de e-mail verificado!
 
     const idToken = await result.user.getIdToken();
     localStorage.setItem("user", JSON.stringify(result.user));
@@ -73,22 +62,20 @@ window.signUp = async function () {
   const password = document.getElementById("password").value.trim();
 
   try {
-    // 1. Obter fingerprint e IP
+    // 1. Obter fingerprint do navegador
     const fingerprint = await getFingerprint();
-    const ip = await getIP();
 
-    if (!fingerprint || !ip) {
-      showError("Erro ao identificar seu navegador ou rede. Tente novamente.");
+    if (!fingerprint) {
+      showError("Erro ao identificar seu navegador. Tente novamente.");
       return;
     }
 
-    // 2. Checa se fingerprint OU IP já estão cadastrados
+    // 2. Checa se fingerprint já está cadastrada
     const fpQuery = await db.collection("fingerprints").doc(fingerprint).get();
-    const ipQuery = await db.collection("ips").doc(ip).get();
 
-    if (fpQuery.exists || ipQuery.exists) {
+    if (fpQuery.exists) {
       showError(
-        "Você já criou uma conta gratuita neste dispositivo ou nesta rede. Faça login ou assine o plano Plus para criar outra conta."
+        "Você já criou uma conta gratuita neste navegador. Faça login ou assine o plano Plus para criar outra conta."
       );
       return;
     }
@@ -96,15 +83,9 @@ window.signUp = async function () {
     // 3. Cria o usuário (autentica para liberar gravação)
     const result  = await auth.createUserWithEmailAndPassword(email, password);
 
-    // 4. Salva fingerprint e IP
+    // 4. Salva fingerprint no Firestore
     await db.collection("fingerprints").doc(fingerprint).set({
       email: email,
-      ip: ip,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    await db.collection("ips").doc(ip).set({
-      email: email,
-      fingerprint: fingerprint,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
 
@@ -141,7 +122,7 @@ auth.onAuthStateChanged(async (user) => {
     window.location.href = "login.html";
   }
   if (user && isLoginPage) {
-    // NÃO há checagem de e-mail verificado aqui
+    // Não há checagem de e-mail verificado aqui!
     window.location.href = "index.html";
   }
   if (user) {

@@ -55,11 +55,7 @@ window.login = async function () {
   try {
     const result  = await auth.signInWithEmailAndPassword(email, password);
 
-    if (!result.user.emailVerified) {
-      showError("⚠️ Por favor, confirme seu e-mail antes de acessar. Verifique sua caixa de entrada (e spam).");
-      await auth.signOut();
-      return;
-    }
+    // *** REMOVIDO: Checagem de e-mail verificado ***
 
     const idToken = await result.user.getIdToken();
     localStorage.setItem("user", JSON.stringify(result.user));
@@ -112,21 +108,12 @@ window.signUp = async function () {
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
 
-    // 5. Envia e-mail de verificação (mas pode cair no spam/ser bloqueado por limite!)
-    try {
-      await result.user.sendEmailVerification({
-        url: 'https://prod-ai-novo.vercel.app/login.html',
-        handleCodeInApp: false,
-        locale: 'pt'
-      });
-      showError(
-        "Cadastro realizado! Um e-mail de confirmação foi enviado. Verifique sua caixa de entrada (e spam). Só será possível acessar após confirmar seu e-mail."
-      );
-    } catch (err) {
-      showError("Cadastro realizado, mas não foi possível enviar o e-mail de confirmação: " + (err.message || err));
-    }
+    // 5. Mostra mensagem de sucesso
+    showError(
+      "Cadastro realizado com sucesso! Faça login para acessar a plataforma."
+    );
 
-    // 6. Faz signOut para impedir login sem verificação
+    // 6. Faz signOut só por segurança (opcional)
     await auth.signOut();
 
   } catch (error) {
@@ -154,11 +141,7 @@ auth.onAuthStateChanged(async (user) => {
     window.location.href = "login.html";
   }
   if (user && isLoginPage) {
-    if (!user.emailVerified) {
-      showError("⚠️ Confirme seu e-mail antes de acessar!");
-      await auth.signOut();
-      return;
-    }
+    // *** REMOVIDO: Checagem de e-mail verificado ***
     window.location.href = "index.html";
   }
   if (user) {

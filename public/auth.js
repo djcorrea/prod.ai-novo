@@ -1,11 +1,9 @@
-// auth.js
-
-// 🛠️ Inicialização do Firebase (com storageBucket corrigido)
+// Inicialização do Firebase
 const firebaseConfig = {
   apiKey:            "AIzaSyBKby0RdIOGorhrfBRMCWnL25peU3epGTw",
   authDomain:        "prodai-58436.firebaseapp.com",
   projectId:         "prodai-58436",
-  storageBucket:     "prodai-58436.appspot.com",      // <— alterado aqui
+  storageBucket:     "prodai-58436.appspot.com",   // Corrigido aqui
   messagingSenderId: "801631191322",
   appId:             "1:801631191322:web:80e3d29cf7468331652ca3",
   measurementId:     "G-MBDHDYN6Z0"
@@ -59,15 +57,12 @@ window.logout = async function () {
 // 🔄 VERIFICAÇÃO DE SESSÃO
 auth.onAuthStateChanged(async (user) => {
   const isLoginPage = window.location.pathname.includes("login.html");
-
   if (!user && !isLoginPage) {
     window.location.href = "login.html";
   }
-
   if (user && isLoginPage) {
     window.location.href = "index.html";
   }
-
   if (user) {
     const idToken = await user.getIdToken();
     localStorage.setItem("idToken", idToken);

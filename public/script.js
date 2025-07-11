@@ -110,12 +110,21 @@ function goToPlanos() {
 }
 
 // ─── LISTENERS GLOBAIS ────────────────────────────────────
-input.addEventListener('keydown', function(e) {
-  if (e.key === 'Enter' && !e.shiftKey) {
+if (input) {
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+}
+
+if (sendBtn) {
+  sendBtn.addEventListener('click', function(e) {
     e.preventDefault();
     sendMessage();
-  }
-});
+  });
+}
 
 document.addEventListener('click', function(e) {
   const plusBtn = e.target.closest('.btn-plus');
@@ -130,19 +139,35 @@ document.addEventListener('click', function(e) {
   }
 });
 
-// Adiciona listener para clique no botão Enviar
-sendBtn.addEventListener('click', function(e) {
-  e.preventDefault();
-  sendMessage();
-});
-
 // Saudação inicial
 window.addEventListener('load', function() {
-  input.focus();
-  setTimeout(function() {
-    appendMessage(
-      '<strong>Assistente:</strong> 🎵 Bem-vindo! Sou seu mentor especializado em produção musical. O que você gostaria de aprender hoje?',
-      'bot'
-    );
-  }, 1000);
+  if (input) {
+    input.focus();
+    setTimeout(function() {
+      appendMessage(
+        '<strong>Assistente:</strong> 🎵 Bem-vindo! Sou seu mentor especializado em produção musical. O que você gostaria de aprender hoje?',
+        'bot'
+      );
+    }, 1000);
+  }
+});
+
+// ─── +55 AUTOMÁTICO NO INPUT DE CELULAR ──────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  const phoneInput = document.getElementById('phone');
+  if (phoneInput) {
+    phoneInput.addEventListener('focus', function() {
+      if (!phoneInput.value.trim().startsWith('+55')) {
+        phoneInput.value = '+55';
+        setTimeout(() => {
+          phoneInput.setSelectionRange(phoneInput.value.length, phoneInput.value.length);
+        }, 1);
+      }
+    });
+    phoneInput.addEventListener('blur', function() {
+      if (phoneInput.value.trim() === '+55') {
+        phoneInput.value = '';
+      }
+    });
+  }
 });

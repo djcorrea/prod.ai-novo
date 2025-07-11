@@ -4,7 +4,7 @@ const firebaseConfig = {
   projectId:         "prodai-58436",
   storageBucket:     "prodai-58436.appspot.com",
   messagingSenderId: "801631191322",
-  appId:             "1:801631191322:web:80e3d29cf7468331652ca3",
+  appId:             "1:801631322:web:80e3d29cf7468331652ca3",
   measurementId:     "G-MBDHDYN6Z0"
 };
 if (!firebase.apps.length) {
@@ -38,6 +38,18 @@ async function getFingerprint() {
 let confirmationResult = null;
 let lastPhone = "";
 
+// Mostrar a seção para digitar o código SMS e desabilitar botão cadastrar
+window.showSMSSection = function() {
+  const smsSection = document.getElementById('sms-section');
+  if (smsSection) {
+    smsSection.style.display = 'block';
+  }
+  const signUpBtn = document.getElementById('signUpBtn');
+  if (signUpBtn) {
+    signUpBtn.disabled = true;
+  }
+};
+
 // --- LOGIN NORMAL ---
 window.login = async function () {
   const email    = document.getElementById("email").value.trim();
@@ -55,83 +67,96 @@ window.login = async function () {
   }
 };
 
+// Função para enviar SMS - agora chamada dentro de signUp
+async function sendSMS(phone) {
+  // Checar telefone já cadastrado
+  const phoneSnap = await db.collection("phones").doc(phone).get();
+  if (phoneSnap.exists) {
+    showError("Esse telefone já está cadastrado em outra conta!");
+    return false;
+  }
+
+  // Recaptcha invisível
+  if (!window.recaptchaVerifier) {
+    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+      'size': 'invisible'
+    });
+  }
+
+  try {
+    confirmationResult = await auth.signInWithPhoneNumber(phone, window.recaptchaVerifier);
+    lastPhone = phone;
+    showError("Código SMS enviado! Digite o código recebido.");
+    window.showSMSSection();
+    return true;
+  } catch (error) {
+    showError("Erro ao enviar SMS: " + (error.message || error));
+    return false;
+  }
+}
+
 // --- CADASTRO NOVO ---
 window.signUp = async function () {
   const email    = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
-  let phone      = document.getElementById("phone").value.trim();
-  const code     = document.getElementById("smsCode").value.trim();
+  const phone    = document.getElementById("phone").value.trim();
 
   if (!email || !password || !phone) {
     showError("Preencha todos os campos.");
     return;
   }
 
-  // Se o usuário não colocou o +55 no número, adiciona automaticamente
-  if (/^\d{10,11}$/.test(phone)) {
-    phone = "+55" + phone;
-  }
-
-  if (!phone.match(/^\+\d{12,14}$/)) {
-    showError("Informe um número de celular válido, com DDD, ex: 11999999999 ou +5511999999999");
-    return;
-  }
-
-  // Verifica se o SMS já foi enviado e se o código foi preenchido
+  // Se SMS ainda não enviado para esse telefone, envie
   if (!confirmationResult || lastPhone !== phone) {
-    // Envia SMS na primeira chamada
-    try {
-      // Checa se telefone já existe
-      const phoneSnap = await db.collection("phones").doc(phone).get();
-      if (phoneSnap.exists) {
-        showError("Esse telefone já está cadastrado em outra conta!");
-        return;
-      }
-
-      // Recaptcha invisível
-      if (!window.recaptchaVerifier) {
-        window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-          'size': 'invisible'
-        });
-      }
-      confirmationResult = await auth.signInWithPhoneNumber(phone, window.recaptchaVerifier);
-      lastPhone = phone;
-      showError("Código SMS enviado! Digite o código recebido.");
-      document.getElementById("smsCode").style.display = "";
-      return;
-    } catch (error) {
-      showError("Erro ao enviar SMS: " + (error.message || error));
-      document.getElementById("smsCode").style.display = "none";
-      return;
-    }
+    const sent = await sendSMS(phone);
+    if (!sent) return;
+    return; // Espera o usuário digitar código e chamar confirmSMSCode
   }
+
+  showError("Código SMS enviado! Digite o código recebido no campo abaixo.");
+};
+
+// --- CONFIRMAR CÓDIGO SMS E FINALIZAR CADASTRO ---
+window.confirmSMSCode = async function() {
+  const email    = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const phone    = document.getElementById("phone").value.trim();
+  const code     = document.getElementById("smsCode").value.trim();
+
   if (!code || code.length < 6) {
     showError("Digite o código recebido por SMS.");
     return;
   }
 
   try {
-    // 1. Confirma o código SMS
+    // Confirma o código SMS
     await confirmationResult.confirm(code);
 
-    // 2. Fingerprint
+    // Obter fingerprint
     const fingerprint = await getFingerprint();
     if (!fingerprint) {
       showError("Erro ao identificar seu navegador. Tente novamente.");
       return;
     }
 
-    // 3. Checa se fingerprint já cadastrada
+    // Checar se já tem cadastro com essa fingerprint
     const fpQuery = await db.collection("fingerprints").doc(fingerprint).get();
     if (fpQuery.exists) {
       showError("Você já criou uma conta gratuita neste navegador. Faça login ou assine o plano Plus.");
       return;
     }
 
-    // 4. Cria usuário
+    // Checar se telefone já cadastrado
+    const phoneSnap = await db.collection("phones").doc(phone).get();
+    if (phoneSnap.exists) {
+      showError("Esse telefone já está cadastrado em outra conta!");
+      return;
+    }
+
+    // Criar usuário
     const result = await auth.createUserWithEmailAndPassword(email, password);
 
-    // 5. Salva fingerprint e telefone
+    // Salvar fingerprint e telefone
     await db.collection("fingerprints").doc(fingerprint).set({
       email: email,
       phone: phone,
@@ -145,6 +170,16 @@ window.signUp = async function () {
 
     showError("Cadastro realizado com sucesso! Faça login para acessar a plataforma.");
     await auth.signOut();
+
+    // Reabilitar botão cadastrar e esconder seção SMS
+    const signUpBtn = document.getElementById('signUpBtn');
+    if (signUpBtn) {
+      signUpBtn.disabled = false;
+    }
+    const smsSection = document.getElementById('sms-section');
+    if (smsSection) {
+      smsSection.style.display = 'none';
+    }
 
   } catch (error) {
     showError("Erro ao cadastrar: " + (error.message || error));

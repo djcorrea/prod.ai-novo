@@ -38,9 +38,6 @@ async function getFingerprint() {
 let confirmationResult = null;
 let lastPhone = "";
 
-// (Usado se quiser botão isolado para enviar SMS. Pode remover se for automático no signUp)
-// window.enviarSMS = async function () {...}
-
 // --- LOGIN NORMAL ---
 window.login = async function () {
   const email    = document.getElementById("email").value.trim();
@@ -62,13 +59,24 @@ window.login = async function () {
 window.signUp = async function () {
   const email    = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
-  const phone    = document.getElementById("phone").value.trim();
+  let phone      = document.getElementById("phone").value.trim();
   const code     = document.getElementById("smsCode").value.trim();
 
   if (!email || !password || !phone) {
     showError("Preencha todos os campos.");
     return;
   }
+
+  // Se o usuário não colocou o +55 no número, adiciona automaticamente
+  if (/^\d{10,11}$/.test(phone)) {
+    phone = "+55" + phone;
+  }
+
+  if (!phone.match(/^\+\d{12,14}$/)) {
+    showError("Informe um número de celular válido, com DDD, ex: 11999999999 ou +5511999999999");
+    return;
+  }
+
   // Verifica se o SMS já foi enviado e se o código foi preenchido
   if (!confirmationResult || lastPhone !== phone) {
     // Envia SMS na primeira chamada

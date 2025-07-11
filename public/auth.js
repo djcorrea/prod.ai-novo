@@ -36,16 +36,56 @@ async function getFingerprint() {
   return null;
 }
 
-// 🔐 LOGIN
+// --- SMS FIREBASE ---
+let confirmationResult = null;
+let lastPhone = "";
+
+window.enviarSMS = async function () {
+  const phone = document.getElementById("phone").value.trim();
+  if (!phone || !phone.match(/^\+\d{10,14}$/)) {
+    showError("Informe um número de celular válido, com DDD, formato: +5599999999999");
+    return;
+  }
+
+  // Checa se já existe telefone cadastrado
+  try {
+    const snap = await db.collection("phones").doc(phone).get();
+    if (snap.exists) {
+      showError("Esse telefone já está cadastrado em outra conta!");
+      return;
+    }
+  } catch (e) {
+    showError("Erro ao verificar número. Tente novamente.");
+    return;
+  }
+
+  // Recaptcha
+  if (!window.recaptchaVerifier) {
+    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+      'size': 'normal',
+      'callback': function(response) {}
+    });
+    window.recaptchaVerifier.render();
+  }
+
+  try {
+    confirmationResult = await auth.signInWithPhoneNumber(phone, window.recaptchaVerifier);
+    showError("Código SMS enviado! Digite o código recebido.");
+    document.getElementById("smsCode").style.display = "";
+    lastPhone = phone;
+  } catch (error) {
+    showError("Erro ao enviar SMS: " + error.message);
+    document.getElementById("smsCode").style.display = "none";
+  }
+};
+
+// --- LOGIN NORMAL ---
 window.login = async function () {
   const email    = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
 
   try {
     const result  = await auth.signInWithEmailAndPassword(email, password);
-
-    // Não faz checagem de e-mail verificado!
-
     const idToken = await result.user.getIdToken();
     localStorage.setItem("user", JSON.stringify(result.user));
     localStorage.setItem("idToken", idToken);
@@ -56,76 +96,90 @@ window.login = async function () {
   }
 };
 
-// 👤 REGISTRO
+// --- CADASTRO NOVO ---
 window.signUp = async function () {
   const email    = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
+  const phone    = document.getElementById("phone").value.trim();
+  const code     = document.getElementById("smsCode").value.trim();
+
+  if (!email || !password || !phone) {
+    showError("Preencha todos os campos.");
+    return;
+  }
+  if (!confirmationResult || lastPhone !== phone) {
+    showError("Envie o código SMS e digite o código antes de cadastrar.");
+    return;
+  }
+  if (!code || code.length < 6) {
+    showError("Digite o código recebido por SMS.");
+    return;
+  }
 
   try {
-    // 1. Obter fingerprint do navegador
-    const fingerprint = await getFingerprint();
-    console.log("Fingerprint:", fingerprint); // <-- Debug aqui!
+    // 1. Confirma o código SMS
+    await confirmationResult.confirm(code);
 
+    // 2. Fingerprint
+    const fingerprint = await getFingerprint();
     if (!fingerprint) {
       showError("Erro ao identificar seu navegador. Tente novamente.");
       return;
     }
 
-    // 2. Checa se fingerprint já está cadastrada
+    // 3. Checa se fingerprint já cadastrada
     const fpQuery = await db.collection("fingerprints").doc(fingerprint).get();
-
     if (fpQuery.exists) {
-      showError(
-        "Você já criou uma conta gratuita neste navegador. Faça login ou assine o plano Plus para criar outra conta."
-      );
+      showError("Você já criou uma conta gratuita neste navegador. Faça login ou assine o plano Plus.");
       return;
     }
 
-    // 3. Cria o usuário (autentica para liberar gravação)
-    const result  = await auth.createUserWithEmailAndPassword(email, password);
+    // 4. Checa telefone
+    const phoneSnap = await db.collection("phones").doc(phone).get();
+    if (phoneSnap.exists) {
+      showError("Esse telefone já está cadastrado em outra conta!");
+      return;
+    }
 
-    // 4. Salva fingerprint no Firestore
+    // 5. Cria usuário
+    const result = await auth.createUserWithEmailAndPassword(email, password);
+
+    // 6. Salva fingerprint e telefone
     await db.collection("fingerprints").doc(fingerprint).set({
       email: email,
+      phone: phone,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    await db.collection("phones").doc(phone).set({
+      email: email,
+      fingerprint: fingerprint,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
 
-    // 5. Mostra mensagem de sucesso
-    showError(
-      "Cadastro realizado com sucesso! Faça login para acessar a plataforma."
-    );
-
-    // 6. Faz signOut só por segurança (opcional)
+    showError("Cadastro realizado com sucesso! Faça login para acessar a plataforma.");
     await auth.signOut();
 
   } catch (error) {
-    showError("Erro ao cadastrar: " + error.message);
+    showError("Erro ao cadastrar: " + (error.message || error));
     console.error(error);
   }
 };
 
 window.register = window.signUp;
 
-// 🔓 LOGOUT
+// LOGOUT
 window.logout = async function () {
-  try {
-    await auth.signOut();
-  } catch (e) {}
+  try { await auth.signOut(); } catch (e) {}
   localStorage.removeItem("user");
   localStorage.removeItem("idToken");
   window.location.href = "login.html";
 };
 
-// 🔄 VERIFICAÇÃO DE SESSÃO
+// VERIFICA SESSÃO
 auth.onAuthStateChanged(async (user) => {
   const isLoginPage = window.location.pathname.includes("login.html");
-  if (!user && !isLoginPage) {
-    window.location.href = "login.html";
-  }
-  if (user && isLoginPage) {
-    // Não há checagem de e-mail verificado aqui!
-    window.location.href = "index.html";
-  }
+  if (!user && !isLoginPage) window.location.href = "login.html";
+  if (user && isLoginPage) window.location.href = "index.html";
   if (user) {
     const idToken = await user.getIdToken();
     localStorage.setItem("idToken", idToken);

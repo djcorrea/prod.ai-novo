@@ -4,77 +4,56 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Prod.AI – Login</title>
-
   <link rel="stylesheet" href="style.css" />
   <style>
-    /* ===== Login-specific styles ===== */
     .container {
       max-width: 400px;
       padding: 2rem;
       margin: 4rem auto;
       text-align: center;
     }
-
     .subtitle {
       color: rgba(255,255,255,0.7);
       margin-bottom: 1.5rem;
     }
-
-    .input-group {
-      margin-bottom: 1rem;
-    }
+    .input-group { margin-bottom: 1rem; }
     .input-group input {
-      width: 100%;
-      padding: 0.9rem 1rem;
+      width: 100%; padding: 0.9rem 1rem;
       border: 2px solid rgba(147, 51, 234,0.3);
       border-radius: 12px;
       background: rgba(10,10,25,0.8);
-      color: #fff;
-      font-size: 1rem;
-      outline: none;
+      color: #fff; font-size: 1rem; outline: none;
       transition: all 0.3s;
     }
     .input-group input:focus {
       border-color: #9333ea;
       box-shadow: 0 0 0 3px rgba(147,51,234,0.2);
     }
-
     .button-group {
-      display: flex;
-      gap: 0.75rem;
-      justify-content: center;
-      margin-top: 1rem;
-      flex-wrap: wrap;
+      display: flex; gap: 0.75rem; justify-content: center;
+      margin-top: 1rem; flex-wrap: wrap;
     }
-
-    .button-group .btn,
-    .button-group .btn-plus {
-      flex: 1;
-      min-width: 120px;
+    .button-group .btn, .button-group .btn-plus {
+      flex: 1; min-width: 120px;
     }
-
     .error-message {
-      background: rgba(255,0,0,0.2);
-      color: #ff6961;
-      padding: 0.75rem;
-      border-radius: 8px;
-      margin-bottom: 1rem;
-      display: none;
-      font-weight: 600;
-      text-align: center;
+      background: rgba(255,0,0,0.2); color: #ff6961;
+      padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem;
+      display: none; font-weight: 600; text-align: center;
     }
     .error-message[style*="display: block"] {
       display: block !important;
     }
+    .sms-section { margin-bottom: 1rem; }
+    #recaptcha-container { margin: 0 auto 1rem auto; }
+    .input-sms { width: 100%; margin-top: 5px; padding: 0.5rem; }
   </style>
 </head>
 <body>
   <div class="particles"></div>
-
   <div class="container fade-in">
     <h1 class="logo">Prod.AI</h1>
     <p class="subtitle">Acesse sua conta</p>
-
     <div id="error-message" class="error-message"></div>
 
     <div class="input-group">
@@ -82,6 +61,18 @@
     </div>
     <div class="input-group">
       <input id="password" type="password" placeholder="Sua senha" autocomplete="current-password" />
+    </div>
+
+    <!-- TELEFONE para cadastro -->
+    <div class="input-group">
+      <input id="phone" type="tel" placeholder="Seu celular (com DDD)" autocomplete="tel" />
+    </div>
+
+    <!-- Botão para enviar SMS -->
+    <div class="sms-section">
+      <div id="recaptcha-container"></div>
+      <button type="button" class="btn-plus" onclick="enviarSMS()">Enviar código SMS</button>
+      <input id="smsCode" class="input-sms" placeholder="Código recebido por SMS" maxlength="6" style="display:none;" />
     </div>
 
     <div class="button-group">

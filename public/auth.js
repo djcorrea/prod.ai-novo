@@ -1,5 +1,3 @@
-// auth.js
-
 const firebaseConfig = {
   apiKey:            "AIzaSyBKby0RdIOGorhrfBRMCWnL25peU3epGTw",
   authDomain:        "prodai-58436.firebaseapp.com",
@@ -40,44 +38,8 @@ async function getFingerprint() {
 let confirmationResult = null;
 let lastPhone = "";
 
-window.enviarSMS = async function () {
-  const phone = document.getElementById("phone").value.trim();
-  if (!phone || !phone.match(/^\+\d{10,14}$/)) {
-    showError("Informe um número de celular válido, com DDD, formato: +5599999999999");
-    return;
-  }
-
-  // Checa se já existe telefone cadastrado
-  try {
-    const snap = await db.collection("phones").doc(phone).get();
-    if (snap.exists) {
-      showError("Esse telefone já está cadastrado em outra conta!");
-      return;
-    }
-  } catch (e) {
-    showError("Erro ao verificar número. Tente novamente.");
-    return;
-  }
-
-  // Recaptcha
-  if (!window.recaptchaVerifier) {
-    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-      'size': 'normal',
-      'callback': function(response) {}
-    });
-    window.recaptchaVerifier.render();
-  }
-
-  try {
-    confirmationResult = await auth.signInWithPhoneNumber(phone, window.recaptchaVerifier);
-    showError("Código SMS enviado! Digite o código recebido.");
-    document.getElementById("smsCode").style.display = "";
-    lastPhone = phone;
-  } catch (error) {
-    showError("Erro ao enviar SMS: " + error.message);
-    document.getElementById("smsCode").style.display = "none";
-  }
-};
+// (Usado se quiser botão isolado para enviar SMS. Pode remover se for automático no signUp)
+// window.enviarSMS = async function () {...}
 
 // --- LOGIN NORMAL ---
 window.login = async function () {
@@ -107,9 +69,33 @@ window.signUp = async function () {
     showError("Preencha todos os campos.");
     return;
   }
+  // Verifica se o SMS já foi enviado e se o código foi preenchido
   if (!confirmationResult || lastPhone !== phone) {
-    showError("Envie o código SMS e digite o código antes de cadastrar.");
-    return;
+    // Envia SMS na primeira chamada
+    try {
+      // Checa se telefone já existe
+      const phoneSnap = await db.collection("phones").doc(phone).get();
+      if (phoneSnap.exists) {
+        showError("Esse telefone já está cadastrado em outra conta!");
+        return;
+      }
+
+      // Recaptcha invisível
+      if (!window.recaptchaVerifier) {
+        window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+          'size': 'invisible'
+        });
+      }
+      confirmationResult = await auth.signInWithPhoneNumber(phone, window.recaptchaVerifier);
+      lastPhone = phone;
+      showError("Código SMS enviado! Digite o código recebido.");
+      document.getElementById("smsCode").style.display = "";
+      return;
+    } catch (error) {
+      showError("Erro ao enviar SMS: " + (error.message || error));
+      document.getElementById("smsCode").style.display = "none";
+      return;
+    }
   }
   if (!code || code.length < 6) {
     showError("Digite o código recebido por SMS.");
@@ -134,17 +120,10 @@ window.signUp = async function () {
       return;
     }
 
-    // 4. Checa telefone
-    const phoneSnap = await db.collection("phones").doc(phone).get();
-    if (phoneSnap.exists) {
-      showError("Esse telefone já está cadastrado em outra conta!");
-      return;
-    }
-
-    // 5. Cria usuário
+    // 4. Cria usuário
     const result = await auth.createUserWithEmailAndPassword(email, password);
 
-    // 6. Salva fingerprint e telefone
+    // 5. Salva fingerprint e telefone
     await db.collection("fingerprints").doc(fingerprint).set({
       email: email,
       phone: phone,

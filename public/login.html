@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Prod.AI – Login</title>
-
   <link rel="stylesheet" href="style.css" />
   <style>
     .container {
@@ -35,10 +34,17 @@
       border-color: #9333ea;
       box-shadow: 0 0 0 3px rgba(147,51,234,0.2);
     }
-    .sms-btn-row {
+    .button-group {
       display: flex;
+      gap: 0.75rem;
       justify-content: center;
-      margin-bottom: 1rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+    .button-group .btn-main {
+      flex: 1;
+      min-width: 120px;
+      margin: 0;
     }
     .btn-main {
       background: linear-gradient(90deg, #a259f7, #9333ea 60%, #6d28d9 100%);
@@ -61,18 +67,6 @@
       filter: brightness(0.95);
       transform: scale(0.98);
     }
-    .button-group {
-      display: flex;
-      gap: 0.75rem;
-      justify-content: center;
-      margin-top: 1rem;
-      flex-wrap: wrap;
-    }
-    .button-group .btn-main {
-      flex: 1;
-      min-width: 120px;
-      margin: 0;
-    }
     .error-message {
       background: rgba(255,0,0,0.2);
       color: #ff6961;
@@ -85,6 +79,10 @@
     }
     .error-message[style*="display: block"] {
       display: block !important;
+    }
+    #sms-section {
+      display: none;
+      margin-top: 1.5rem;
     }
   </style>
 </head>
@@ -109,26 +107,25 @@
 
     <div id="recaptcha-container"></div>
 
-    <div class="sms-btn-row">
-      <button type="button" class="btn-main" onclick="sendSMSCode()">Enviar código SMS</button>
-    </div>
-
-    <div class="input-group">
-      <input id="smsCode" type="text" placeholder="Código recebido por SMS" autocomplete="one-time-code" />
-    </div>
-
     <div class="button-group">
       <button class="btn-main" onclick="login()">Entrar</button>
-      <button class="btn-main" onclick="signUp()">Cadastrar</button>
+      <button class="btn-main" id="signUpBtn" onclick="signUp()">Cadastrar</button>
+    </div>
+
+    <!-- Seção para confirmação de SMS (aparece após cadastrar) -->
+    <div id="sms-section">
+      <p>Enviamos um código SMS para seu celular.<br>Digite o código para concluir o cadastro.</p>
+      <div class="input-group">
+        <input id="smsCode" type="text" placeholder="Código recebido por SMS" autocomplete="one-time-code" />
+      </div>
+      <button class="btn-main" onclick="confirmSMSCode()">Confirmar código</button>
     </div>
   </div>
 
-  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore-compat.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
-  <!-- Seu script de autenticação -->
   <script src="auth.js"></script>
 </body>
 </html>

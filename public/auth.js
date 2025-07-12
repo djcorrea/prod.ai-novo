@@ -13,13 +13,40 @@ if (!firebase.apps.length) {
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-function showError(message) {
+// Mapeamento dos principais erros do Firebase Auth para português
+const firebaseErrorsPt = {
+  'auth/invalid-phone-number':         'Número de telefone inválido. Use o formato +55 DDD + número.',
+  'auth/missing-phone-number':         'Digite seu número de telefone.',
+  'auth/too-many-requests':            'Muitas tentativas. Tente novamente mais tarde.',
+  'auth/quota-exceeded':               'Limite de SMS excedido. Tente novamente mais tarde.',
+  'auth/user-disabled':                'Usuário desativado.',
+  'auth/code-expired':                 'O código expirou. Solicite um novo.',
+  'auth/invalid-verification-code':    'Código de verificação inválido.',
+  'auth/captcha-check-failed':         'Falha na verificação do reCAPTCHA.',
+  'auth/network-request-failed':       'Falha de conexão com a internet.',
+  'auth/app-not-authorized':           'App não autorizado. Verifique as configurações do Firebase.',
+  'auth/session-expired':              'Sessão expirada. Tente novamente.',
+  'auth/invalid-verification-id':      'Falha na verificação. Tente novamente.',
+  'auth/email-already-in-use':         'Esse e-mail já está cadastrado. Faça login ou recupere sua senha.',
+  'auth/invalid-email':                'E-mail inválido. Digite um e-mail válido.',
+  'auth/wrong-password':               'Senha incorreta.',
+  'auth/user-not-found':               'Usuário não encontrado. Verifique o e-mail e tente novamente.',
+  'auth/weak-password':                'A senha deve ter pelo menos 6 caracteres.',
+  // ...adicione outros erros conforme necessário
+};
+
+// Função para exibir o erro traduzido
+function showError(messageOrError) {
+  let msg = typeof messageOrError === 'object' && messageOrError.code
+    ? (firebaseErrorsPt[messageOrError.code] || messageOrError.message || 'Erro desconhecido.')
+    : messageOrError;
+
   const el = document.getElementById("error-message");
   if (el) {
-    el.innerText = message;
+    el.innerText = msg;
     el.style.display = "block";
   } else {
-    alert(message);
+    alert(msg);
   }
 }
 
@@ -62,7 +89,7 @@ window.login = async function () {
     localStorage.setItem("idToken", idToken);
     window.location.href = "index.html";
   } catch (error) {
-    showError("Erro ao fazer login: " + error.message);
+    showError(error);
     console.error(error);
   }
 };
@@ -90,7 +117,7 @@ async function sendSMS(phone) {
     window.showSMSSection();
     return true;
   } catch (error) {
-    showError("Erro ao enviar SMS: " + (error.message || error));
+    showError(error);
     return false;
   }
 }
@@ -182,7 +209,7 @@ window.confirmSMSCode = async function() {
     }
 
   } catch (error) {
-    showError("Erro ao cadastrar: " + (error.message || error));
+    showError(error);
     console.error(error);
   }
 };

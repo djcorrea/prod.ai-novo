@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Redefinir Senha – Prod.AI</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a0a2e 25%, #16213e 50%, #0a0a0a 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', sans-serif;
+    }
+    .reset-container {
+      background: rgba(15, 15, 35, 0.97);
+      border-radius: 22px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 20px 40px 0 rgba(80,20,180,0.18);
+      max-width: 350px;
+      width: 100%;
+      text-align: center;
+      border: 1.5px solid rgba(147, 51, 234, 0.3);
+    }
+    .reset-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.1rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #9333ea, #3b82f6, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+    .reset-title {
+      color: #fff;
+      font-size: 1.2rem;
+      font-weight: 500;
+      margin-bottom: 1.6rem;
+    }
+    .reset-field {
+      width: 100%;
+      padding: 1rem 1rem;
+      margin-bottom: 1.4rem;
+      border-radius: 12px;
+      border: 2px solid rgba(147, 51, 234,0.3);
+      background: rgba(20, 20, 35, 0.90);
+      color: #fff;
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.3s;
+    }
+    .reset-field:focus {
+      border-color: #9333ea;
+      box-shadow: 0 0 0 3px rgba(147,51,234,0.18);
+    }
+    .reset-btn {
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(90deg, #a259f7, #9333ea 60%, #6d28d9 100%);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-weight: 700;
+      font-size: 1.1rem;
+      cursor: pointer;
+      margin-bottom: 1rem;
+      margin-top: 0.2rem;
+      transition: 0.2s;
+      box-shadow: 0 2px 16px 0 rgba(147,51,234,0.14);
+    }
+    .reset-btn:active {
+      filter: brightness(0.97);
+      transform: scale(0.98);
+    }
+    .reset-msg {
+      color: #00ffab;
+      margin-bottom: 1rem;
+      font-size: 1.05rem;
+      font-weight: 600;
+      display: none;
+    }
+    .reset-error {
+      color: #ff6961;
+      margin-bottom: 1rem;
+      font-size: 1.05rem;
+      font-weight: 600;
+      display: none;
+    }
+    .back-login {
+      display: block;
+      margin-top: 12px;
+      color: #9333ea;
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 0.99rem;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <div class="reset-container">
+    <div class="reset-logo">Prod.AI</div>
+    <div class="reset-title">Redefinir sua senha</div>
+    <input id="newPassword" class="reset-field" type="password" placeholder="Nova senha" minlength="6" />
+    <button class="reset-btn" onclick="resetPassword()">Salvar nova senha</button>
+    <div id="reset-msg" class="reset-msg"></div>
+    <div id="reset-error" class="reset-error"></div>
+    <a class="back-login" href="login.html">← Voltar para o login</a>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-auth-compat.js"></script>
+  <script>
+    // Config Firebase igual seu projeto
+    const firebaseConfig = {
+      apiKey: "AIzaSyBKby0RdIOGorhrfBRMCWnL25peU3epGTw",
+      authDomain: "prodai-58436.firebaseapp.com",
+      projectId: "prodai-58436",
+      storageBucket: "prodai-58436.appspot.com",
+      messagingSenderId: "801631191322",
+      appId: "1:801631322:web:80e3d29cf7468331652ca3",
+      measurementId: "G-MBDHDYN6Z0"
+    };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    // Captura o código da URL
+    function getParameterByName(name) {
+      const url = window.location.href;
+      name = name.replace(/[\[\]]/g, '\\$&');
+      const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
+      const results = regex.exec(url);
+      if (!results) return null;
+      if (!results[2]) return '';
+      return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+
+    function showMsg(msg) {
+      document.getElementById('reset-msg').innerText = msg;
+      document.getElementById('reset-msg').style.display = 'block';
+      document.getElementById('reset-error').style.display = 'none';
+    }
+
+    function showError(msg) {
+      document.getElementById('reset-error').innerText = msg;
+      document.getElementById('reset-error').style.display = 'block';
+      document.getElementById('reset-msg').style.display = 'none';
+    }
+
+    async function resetPassword() {
+      const oobCode = getParameterByName('oobCode');
+      const newPassword = document.getElementById('newPassword').value.trim();
+      if (!newPassword || newPassword.length < 6) {
+        showError('A senha deve ter pelo menos 6 caracteres.');
+        return;
+      }
+      try {
+        await auth.confirmPasswordReset(oobCode, newPassword);
+        showMsg('Senha redefinida com sucesso! Você pode fazer login normalmente.');
+        setTimeout(() => { window.location.href = "login.html"; }, 2000);
+      } catch (err) {
+        showError('Erro ao redefinir senha: ' + (err.message || 'Tente novamente.'));
+      }
+    }
+  </script>
+</body>
+</html>

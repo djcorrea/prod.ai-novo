@@ -251,12 +251,9 @@ input[type="tel"]::placeholder {
   color: rgba(255, 255, 255, 0.5);
 }
 
-/* BOTÃO PADRÃO ROXO (DEGRADE) */
-.btn-main,
-.btn-plus,
-.btn-send,
-.btn-logout {
-  background: linear-gradient(90deg, #b024ff 0%, #8b31ff 100%);
+/* BOTÕES PRINCIPAIS - TODOS IGUAIS AO ASSINAR VERSÃO PLUS */
+.btn-main, .btn-plus, .btn-send, .btn-logout, #logoutBtn, .logout-btn, button#logoutBtn {
+  background: linear-gradient(90deg, #c300ff 0%, #7e0fff 100%);
   color: #fff;
   border: none;
   border-radius: 12px;
@@ -264,51 +261,35 @@ input[type="tel"]::placeholder {
   font-size: 1rem;
   padding: 0.9rem 1.5rem;
   min-width: 160px;
-  margin-bottom: 0;
-  margin-top: 0;
-  margin-right: 0;
-  margin-left: 0;
-  box-shadow: 0 0 15px 3px rgba(159, 0, 255, 0.15), 0 2px 16px 0 rgba(147,51,234,0.12);
+  box-shadow: 0 0 18px 3px rgba(159,0,255,0.20), 0 2px 16px 0 rgba(147,51,234,0.16);
   cursor: pointer;
   transition: 0.18s;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin: 0.3rem 0.3rem 0.3rem 0;
+  outline: none;
   text-align: center;
 }
 
-.btn-main:active,
-.btn-plus:active,
-.btn-send:active,
-.btn-logout:active {
-  filter: brightness(0.95);
-  transform: scale(0.98);
+.btn-main:active, .btn-plus:active, .btn-send:active, .btn-logout:active, #logoutBtn:active, .logout-btn:active, button#logoutBtn:active {
+  filter: brightness(0.94);
+  transform: scale(0.97);
 }
 
-/* Para o botão ENVIAR e SAIR */
-button#sendBtn, .btn-send,
-button#logoutBtn, .btn-logout {
-  background: linear-gradient(90deg, #b024ff 0%, #8b31ff 100%);
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  font-weight: 600;
-  font-size: 1rem;
-  padding: 0.9rem 1.5rem;
-  min-width: 160px;
-  margin: 0 0.3rem;
-  box-shadow: 0 0 15px 3px rgba(159, 0, 255, 0.15), 0 2px 16px 0 rgba(147,51,234,0.12);
-  cursor: pointer;
-  transition: 0.18s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.btn-main:hover, .btn-plus:hover, .btn-send:hover, .btn-logout:hover, #logoutBtn:hover, .logout-btn:hover, button#logoutBtn:hover {
+  box-shadow: 0 0 24px 6px rgba(159,0,255,0.30);
 }
 
-button#sendBtn:active, .btn-send:active,
-button#logoutBtn:active, .btn-logout:active {
-  filter: brightness(0.95);
-  transform: scale(0.98);
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+button svg {
+  width: 18px;
+  height: 18px;
 }
 
 /* Footer atualizado */
@@ -370,6 +351,7 @@ button#logoutBtn:active, .btn-logout:active {
   text-align: center;
 }
 
+/* Responsividade */
 @media (max-width: 768px) {
   .container {
     padding: 1.5rem;
@@ -389,7 +371,7 @@ button#logoutBtn:active, .btn-logout:active {
     gap: 0.75rem;
   }
 
-  button, .btn-main, .btn-send, .btn-plus, .btn-logout {
+  button, .btn-main {
     width: 100%;
     justify-content: center;
   }

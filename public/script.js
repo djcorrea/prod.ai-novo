@@ -70,7 +70,7 @@ async function sendMessage() {
       hideTypingIndicator();
       appendMessage(
         `<strong>Assistente:</strong> 🚫 Você atingiu o limite de <strong>10 mensagens diárias</strong> na versão gratuita.<br><br>` +
-        `🔓 <button class="btn-plus">Clique aqui para assinar a versão Plus</button> e liberar mensagens ilimitadas.`,
+        `🔓 <a href="planos.html" class="btn-plus" target="_blank">Clique aqui para assinar a versão Plus</a> e liberar mensagens ilimitadas.`,
         'bot'
       );
       return;
@@ -80,7 +80,7 @@ async function sendMessage() {
     if (data.error && data.error.toLowerCase().includes('limite diário')) {
       appendMessage(
         `<strong>Assistente:</strong> 🚫 Você atingiu o limite de <strong>10 mensagens diárias</strong> na versão gratuita.<br><br>` +
-        `🔓 <button class="btn-plus">Clique aqui para assinar a versão Plus</button> e liberar mensagens ilimitadas.`,
+        `🔓 <a href="planos.html" class="btn-plus" target="_blank">Clique aqui para assinar a versão Plus</a> e liberar mensagens ilimitadas.`,
         'bot'
       );
     } else if (data.reply) {
@@ -104,11 +104,6 @@ async function sendMessage() {
   }
 }
 
-// ─── REDIRECIONAR PARA PLANOS ────────────────────────────
-function goToPlanos() {
-  window.location.href = 'planos.html';
-}
-
 // ─── LISTENERS GLOBAIS ────────────────────────────────────
 if (input) {
   input.addEventListener('keydown', function(e) {
@@ -126,18 +121,9 @@ if (sendBtn) {
   });
 }
 
-document.addEventListener('click', function(e) {
-  const plusBtn = e.target.closest('.btn-plus');
-  if (plusBtn) {
-    e.preventDefault();
-    return goToPlanos();
-  }
-  const logoutBtn = e.target.closest('.logout-button');
-  if (logoutBtn) {
-    e.preventDefault();
-    logout();
-  }
-});
+// REMOVIDO: Qualquer listener que envia para planos.html em botões.
+// O link <a href="planos.html" ...> continua funcionando normalmente.
+
 
 // Saudação inicial
 window.addEventListener('load', function() {

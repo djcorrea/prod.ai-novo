@@ -13,6 +13,7 @@ if (!firebase.apps.length) {
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+// Mapeamento dos principais erros do Firebase Auth para português
 const firebaseErrorsPt = {
   'auth/invalid-phone-number':         'Número de telefone inválido. Use o formato +55 DDD + número.',
   'auth/missing-phone-number':         'Digite seu número de telefone.',
@@ -21,18 +22,20 @@ const firebaseErrorsPt = {
   'auth/user-disabled':                'Usuário desativado.',
   'auth/code-expired':                 'O código expirou. Solicite um novo.',
   'auth/invalid-verification-code':    'Código de verificação inválido.',
-  'auth/captcha-check-failed':         'Não foi possível validar este número.',
+  'auth/captcha-check-failed':         'Não foi possível validar este número. Certifique-se de que digitou corretamente, com DDD e sem espaços. Isso pode acontecer se o número não existir, estiver errado ou se houver erro no reCAPTCHA.',
   'auth/network-request-failed':       'Falha de conexão com a internet.',
-  'auth/app-not-authorized':           'App não autorizado.',
+  'auth/app-not-authorized':           'App não autorizado. Verifique as configurações do Firebase.',
   'auth/session-expired':              'Sessão expirada. Tente novamente.',
-  'auth/invalid-verification-id':      'Falha na verificação.',
-  'auth/email-already-in-use':         'Esse e-mail já está cadastrado.',
-  'auth/invalid-email':                'E-mail inválido.',
+  'auth/invalid-verification-id':      'Falha na verificação. Tente novamente.',
+  'auth/email-already-in-use':         'Esse e-mail já está cadastrado. Faça login ou recupere sua senha.',
+  'auth/invalid-email':                'E-mail inválido. Digite um e-mail válido.',
   'auth/wrong-password':               'Senha incorreta.',
-  'auth/user-not-found':               'Usuário não encontrado.',
-  'auth/weak-password':                'A senha deve ter pelo menos 6 caracteres.'
+  'auth/user-not-found':               'Usuário não encontrado. Verifique o e-mail e tente novamente.',
+  'auth/weak-password':                'A senha deve ter pelo menos 6 caracteres.',
+  // ...adicione outros erros conforme necessário
 };
 
+// Função para exibir mensagem de sucesso ou erro
 function showMessage(messageOrError, type = "error") {
   let msg = typeof messageOrError === 'object' && messageOrError.code
     ? (firebaseErrorsPt[messageOrError.code] || messageOrError.message || 'Erro desconhecido.')
@@ -49,6 +52,7 @@ function showMessage(messageOrError, type = "error") {
   }
 }
 
+// Função para obter o fingerprint do navegador
 async function getFingerprint() {
   if (window.FingerprintJS) {
     const fpPromise = FingerprintJS.load();
@@ -59,16 +63,23 @@ async function getFingerprint() {
   return null;
 }
 
+// --- SMS FIREBASE ---
 let confirmationResult = null;
 let lastPhone = "";
 
+// Mostrar a seção para digitar o código SMS e desabilitar botão cadastrar
 window.showSMSSection = function() {
   const smsSection = document.getElementById('sms-section');
-  if (smsSection) smsSection.style.display = 'block';
+  if (smsSection) {
+    smsSection.style.display = 'block';
+  }
   const signUpBtn = document.getElementById('signUpBtn');
-  if (signUpBtn) signUpBtn.disabled = true;
+  if (signUpBtn) {
+    signUpBtn.disabled = true;
+  }
 };
 
+// --- LOGIN NORMAL ---
 window.login = async function () {
   const email    = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
@@ -78,17 +89,20 @@ window.login = async function () {
     const idToken = await result.user.getIdToken();
     localStorage.setItem("user", JSON.stringify(result.user));
     localStorage.setItem("idToken", idToken);
-    window.location.href = "index.html"; // ✅ Redireciona para o chatbot
+    window.location.href = "index.html";
   } catch (error) {
     showMessage(error, "error");
     console.error(error);
   }
 };
 
+// --- ESQUECI A SENHA ---
 window.forgotPassword = async function() {
   const email = document.getElementById("email").value.trim();
-  if (!email) return showMessage("Digite seu e-mail para recuperar a senha.", "error");
-
+  if (!email) {
+    showMessage("Digite seu e-mail para recuperar a senha.", "error");
+    return;
+  }
   try {
     await auth.sendPasswordResetEmail(email);
     showMessage("Enviamos um link de redefinição de senha para seu e-mail.", "success");
@@ -97,13 +111,16 @@ window.forgotPassword = async function() {
   }
 };
 
+// Função para enviar SMS - agora chamada dentro de signUp
 async function sendSMS(phone) {
+  // Checar telefone já cadastrado
   const phoneSnap = await db.collection("phones").doc(phone).get();
   if (phoneSnap.exists) {
     showMessage("Esse telefone já está cadastrado em outra conta!", "error");
     return false;
   }
 
+  // Recaptcha invisível
   if (!window.recaptchaVerifier) {
     window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
       'size': 'invisible'
@@ -122,6 +139,7 @@ async function sendSMS(phone) {
   }
 }
 
+// --- CADASTRO NOVO ---
 window.signUp = async function () {
   const email    = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
@@ -132,15 +150,17 @@ window.signUp = async function () {
     return;
   }
 
+  // Se SMS ainda não enviado para esse telefone, envie
   if (!confirmationResult || lastPhone !== phone) {
     const sent = await sendSMS(phone);
     if (!sent) return;
-    return;
+    return; // Espera o usuário digitar código e chamar confirmSMSCode
   }
 
   showMessage("Código SMS enviado! Digite o código recebido no campo abaixo.", "success");
 };
 
+// --- CONFIRMAR CÓDIGO SMS E FINALIZAR CADASTRO ---
 window.confirmSMSCode = async function() {
   const email    = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
@@ -153,25 +173,34 @@ window.confirmSMSCode = async function() {
   }
 
   try {
+    // Confirma o código SMS
     await confirmationResult.confirm(code);
 
+    // Obter fingerprint
     const fingerprint = await getFingerprint();
-    if (!fingerprint) return showMessage("Erro ao identificar seu navegador.", "error");
+    if (!fingerprint) {
+      showMessage("Erro ao identificar seu navegador. Tente novamente.", "error");
+      return;
+    }
 
+    // Checar se já tem cadastro com essa fingerprint
     const fpQuery = await db.collection("fingerprints").doc(fingerprint).get();
     if (fpQuery.exists) {
       showMessage("Você já criou uma conta gratuita neste navegador. Faça login ou assine o plano Plus.", "error");
       return;
     }
 
+    // Checar se telefone já cadastrado
     const phoneSnap = await db.collection("phones").doc(phone).get();
     if (phoneSnap.exists) {
       showMessage("Esse telefone já está cadastrado em outra conta!", "error");
       return;
     }
 
+    // Criar usuário
     const result = await auth.createUserWithEmailAndPassword(email, password);
 
+    // Salvar fingerprint e telefone
     await db.collection("fingerprints").doc(fingerprint).set({
       email: email,
       phone: phone,
@@ -186,10 +215,15 @@ window.confirmSMSCode = async function() {
     showMessage("Cadastro realizado com sucesso! Faça login para acessar a plataforma.", "success");
     await auth.signOut();
 
+    // Reabilitar botão cadastrar e esconder seção SMS
     const signUpBtn = document.getElementById('signUpBtn');
-    if (signUpBtn) signUpBtn.disabled = false;
+    if (signUpBtn) {
+      signUpBtn.disabled = false;
+    }
     const smsSection = document.getElementById('sms-section');
-    if (smsSection) smsSection.style.display = 'none';
+    if (smsSection) {
+      smsSection.style.display = 'none';
+    }
 
   } catch (error) {
     showMessage(error, "error");
@@ -199,6 +233,7 @@ window.confirmSMSCode = async function() {
 
 window.register = window.signUp;
 
+// LOGOUT
 window.logout = async function () {
   try { await auth.signOut(); } catch (e) {}
   localStorage.removeItem("user");
@@ -206,16 +241,18 @@ window.logout = async function () {
   window.location.href = "login.html";
 };
 
+// VERIFICA SESSÃO
 auth.onAuthStateChanged(async (user) => {
   const isLoginPage = window.location.pathname.includes("login.html");
   if (!user && !isLoginPage) window.location.href = "login.html";
-  if (user && isLoginPage) window.location.href = "index.html"; // ✅ Garantido redirecionamento correto
+  if (user && isLoginPage) window.location.href = "index.html";
   if (user) {
     const idToken = await user.getIdToken();
     localStorage.setItem("idToken", idToken);
   }
 });
 
+// EVENTO PARA "ESQUECI A SENHA" NO LINK
 document.addEventListener("DOMContentLoaded", function() {
   const forgot = document.getElementById("forgotPasswordLink");
   if (forgot) {

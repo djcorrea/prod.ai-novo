@@ -107,12 +107,6 @@
     <div class="input-group">
       <input id="password" type="password" placeholder="Sua senha" autocomplete="current-password" />
     </div>
-    <!-- Esqueci a senha: logo abaixo do campo de senha -->
-    <div style="text-align:right; margin-top: -10px; margin-bottom: 8px;">
-      <a href="#" id="forgotPasswordLink" style="color:#9333ea; font-size:0.95rem; text-decoration:underline; cursor:pointer;">
-        Esqueci a senha
-      </a>
-    </div>
     <div class="input-group">
       <input id="phone" type="tel" placeholder="Seu celular (com DDD)" autocomplete="tel" />
     </div>
@@ -122,6 +116,13 @@
     <div class="button-group">
       <button class="btn-main" onclick="login()">Entrar</button>
       <button class="btn-main" id="signUpBtn" onclick="signUp()">Cadastrar</button>
+    </div>
+
+    <!-- Esqueci a senha centralizado abaixo dos botões -->
+    <div style="text-align:center; margin-top: 14px; margin-bottom: 4px;">
+      <a href="#" id="forgotPasswordLink" style="color:#9333ea; font-size:0.95rem; text-decoration:underline; cursor:pointer;">
+        Esqueci a senha
+      </a>
     </div>
 
     <div id="sms-section">

@@ -45,7 +45,7 @@
 
       <div class="input-container">
         <input type="text" id="user-input" placeholder="Digite sua mensagem..." autocomplete="off" />
-        <button onclick="sendMessage()" id="sendBtn">
+        <button onclick="sendMessage()" id="sendBtn" class="btn-plus">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="m22 2-7 20-4-9-9-4Z"/>
             <path d="M22 2 11 13"/>
@@ -58,8 +58,7 @@
     <footer class="footer">
       <div class="footer-buttons">
         <a href="planos.html" target="_blank" class="btn-plus">Assinar versão Plus</a>
-        <!-- Botão sair com onclick correto -->
-        <button class="btn" onclick="logout()">Sair</button>
+        <button class="btn-plus" onclick="logout()">Sair</button>
       </div>
       <p>Siga no Instagram: <a href="https://instagram.com/djcorreaoriginal" target="_blank">@djcorreaoriginal</a></p>
     </footer>

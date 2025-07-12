@@ -1,4 +1,3 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -12,35 +11,34 @@
   <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore-compat.js"></script>
-  <!-- FingerprintJS caso use no chat também -->
+  <!-- FingerprintJS -->
   <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
-  <!-- Seu auth.js -->
+  <!-- Scripts -->
   <script src="auth.js" defer></script>
+  <script src="script.js" defer></script>
 </head>
 <body>
   <div class="particles"></div>
 
-  <div class="container fade-in">
-    <header class="header" id="header">
+  <div class="start-screen" id="startScreen">
+    <h1 class="logo animate-top" id="startLogo">Prod.AI</h1>
+    <p class="subtitle" id="startSubtitle">Seu mentor virtual inteligente</p>
+    <p class="motivacional fade-motivacional" id="motivacionalText">
+      Como posso te ajudar? Estou aqui para resolver qualquer problema sobre Produção Musical!
+    </p>
+    <div class="start-input">
+      <input type="text" id="startInput" placeholder="Digite aqui...">
+      <button id="startSendBtn" class="btn-plane">🚁</button>
+    </div>
+  </div>
+
+  <div class="container fade-in hidden" id="chatContainer">
+    <header class="header moved" id="prodaiHeader">
       <h1 class="logo">Prod.AI</h1>
       <p class="subtitle">Seu mentor virtual inteligente</p>
     </header>
 
-    <!-- Texto motivacional -->
-    <div class="motivational-text" id="motivationalText">
-      "Qual sua dúvida na produção musical hoje? Estou aqui para resolver qualquer problema!"
-    </div>
-
-    <!-- Input inicial centralizado -->
-    <div class="initial-input-container" id="initialInputContainer">
-      <input type="text" id="initialInput" class="initial-input" placeholder="Digite aqui..." autocomplete="off" />
-      <button class="initial-send-btn" id="initialSendBtn">
-        ✈️
-      </button>
-    </div>
-
-    <!-- Chat container (inicialmente oculto) -->
-    <div class="chat-container" id="chatContainer">
+    <div class="chat-container">
       <div class="chatbox" id="chatbox">
         <div class="message bot">
           <div class="message-content">
@@ -51,9 +49,7 @@
 
       <div class="typing-indicator" id="typingIndicator">
         <div class="typing-dots">
-          <span></span>
-          <span></span>
-          <span></span>
+          <span></span><span></span><span></span>
         </div>
         <span class="typing-text">Assistente está digitando...</span>
       </div>
@@ -65,7 +61,6 @@
             <path d="m22 2-7 20-4-9-9-4Z"/>
             <path d="M22 2 11 13"/>
           </svg>
-          Enviar
         </button>
       </div>
     </div>
@@ -79,6 +74,45 @@
     </footer>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    const startScreen = document.getElementById("startScreen");
+    const startInput = document.getElementById("startInput");
+    const startSendBtn = document.getElementById("startSendBtn");
+    const chatContainer = document.getElementById("chatContainer");
+    const prodaiHeader = document.getElementById("prodaiHeader");
+    const motivacionalText = document.getElementById("motivacionalText");
+    const chatbox = document.getElementById("chatbox");
+
+    let chatStarted = false;
+
+    function startChat(message) {
+      chatStarted = true;
+
+      startScreen.classList.add("fade-out");
+      prodaiHeader.classList.add("moved-to-top");
+      chatContainer.classList.remove("hidden");
+      chatContainer.classList.add("chat-started");
+      setTimeout(() => {
+        startScreen.style.display = "none";
+        document.getElementById("user-input").focus();
+      }, 800);
+
+      // Envia a primeira mensagem
+      document.getElementById("user-input").value = message;
+      sendMessage();
+    }
+
+    startSendBtn.addEventListener("click", () => {
+      const message = startInput.value.trim();
+      if (message) startChat(message);
+    });
+
+    startInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        const message = startInput.value.trim();
+        if (message) startChat(message);
+      }
+    });
+  </script>
 </body>
 </html>

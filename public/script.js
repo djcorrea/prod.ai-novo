@@ -1,16 +1,37 @@
+// script.js
+
 const chatbox = document.getElementById('chatbox');
 const input = document.getElementById('user-input');
 const sendBtn = document.getElementById('sendBtn');
 const typingIndicator = document.getElementById('typingIndicator');
-let isFirstMessage = true;
+const initialInput = document.getElementById('initialInput');
+const initialSendBtn = document.getElementById('initialSendBtn');
+const header = document.getElementById('header');
+const motivationalText = document.getElementById('motivationalText');
+const initialInputContainer = document.getElementById('initialInputContainer');
+const chatContainer = document.getElementById('chatContainer');
+const container = document.querySelector('.container');
+
+let chatStarted = false;
 let conversationHistory = [];
 
-// Animação ao enviar a primeira mensagem
-function animateStart() {
-  const header = document.getElementById('prodaiHeader');
-  const container = document.getElementById('chatContainer');
+// Função para iniciar o chat
+function startChat() {
+  if (chatStarted) return;
+  
+  chatStarted = true;
+  
+  // Adicionar classes para animação
   header.classList.add('moved-to-top');
-  container.classList.add('expanded');
+  motivationalText.classList.add('fade-out');
+  initialInputContainer.classList.add('fade-out');
+  chatContainer.classList.add('expanded');
+  container.classList.add('chat-started');
+  
+  // Focar no input principal após a animação
+  setTimeout(() => {
+    input.focus();
+  }, 800);
 }
 
 // Adiciona mensagem no chat
@@ -34,13 +55,42 @@ function hideTypingIndicator() {
   typingIndicator.style.display = 'none';
 }
 
+// Função para enviar mensagem inicial
+function sendInitialMessage() {
+  const message = initialInput.value.trim();
+  if (!message) return;
+  
+  // Iniciar animação do chat
+  startChat();
+  
+  // Aguardar animação e então processar mensagem
+  setTimeout(() => {
+    appendMessage(`<strong>Você:</strong> ${message}`, 'user');
+    conversationHistory.push({ role: 'user', content: message });
+    processMessage(message);
+  }, 400);
+  
+  initialInput.value = '';
+}
+
+// Função para enviar mensagem normal
 async function sendMessage() {
   const message = input.value.trim();
   if (!message || sendBtn.disabled) return;
 
-  if (isFirstMessage) {
-    animateStart();
-    isFirstMessage = false;
+  // Se é a primeira mensagem e o chat não foi iniciado
+  if (!chatStarted) {
+    startChat();
+    
+    // Aguardar animação e então processar mensagem
+    setTimeout(() => {
+      appendMessage(`<strong>Você:</strong> ${message}`, 'user');
+      conversationHistory.push({ role: 'user', content: message });
+      processMessage(message);
+    }, 400);
+    
+    input.value = '';
+    return;
   }
 
   appendMessage(`<strong>Você:</strong> ${message}`, 'user');
@@ -48,6 +98,11 @@ async function sendMessage() {
   input.focus();
   conversationHistory.push({ role: 'user', content: message });
 
+  await processMessage(message);
+}
+
+// Função para processar mensagem (conecta com sua API)
+async function processMessage(message) {
   sendBtn.disabled = true;
   sendBtn.innerHTML = 'Enviando...';
   showTypingIndicator();
@@ -58,7 +113,7 @@ async function sendMessage() {
       appendMessage(`<strong>Assistente:</strong> Você precisa estar logado para usar o chat.`, 'bot');
       hideTypingIndicator();
       sendBtn.disabled = false;
-      sendBtn.innerHTML = 'Enviar';
+      sendBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 21L23 12L2 3V10L17 12L2 14V21Z" fill="currentColor"/></svg>Enviar';
       return;
     }
 
@@ -104,31 +159,59 @@ async function sendMessage() {
     sendBtn.innerHTML = `
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M2 21L23 12L2 3V10L17 12L2 14V21Z" fill="currentColor"/>
-      </svg>`;
+      </svg>
+      Enviar`;
   }
 }
 
-// Eventos
+// Função logout (mantém sua implementação original)
+function logout() {
+  firebase.auth().signOut().then(() => {
+    window.location.href = 'login.html';
+  }).catch((error) => {
+    console.error('Erro ao fazer logout:', error);
+  });
+}
+
+// Eventos para input inicial
+initialInput?.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    sendInitialMessage();
+  }
+});
+
+initialSendBtn?.addEventListener('click', e => {
+  e.preventDefault();
+  sendInitialMessage();
+});
+
+// Eventos para chat normal
 input?.addEventListener('keydown', e => {
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault();
     sendMessage();
   }
 });
+
 sendBtn?.addEventListener('click', e => {
   e.preventDefault();
   sendMessage();
 });
 
-// Saudação inicial
+// Focar no input inicial ao carregar
 window.addEventListener('load', function() {
-  if (input) {
-    input.focus();
+  if (initialInput) {
+    initialInput.focus();
+    // Saudação inicial após um pequeno delay
     setTimeout(() => {
-      appendMessage(
-        '<strong>Assistente:</strong> 🎵 Bem-vindo! Sou seu mentor especializado em produção musical. O que você gostaria de aprender hoje?',
-        'bot'
-      );
+      if (!chatStarted) {
+        // Só mostra a saudação se o chat não foi iniciado
+        const initialMessage = document.querySelector('.chatbox .message.bot');
+        if (initialMessage) {
+          initialMessage.style.display = 'none';
+        }
+      }
     }, 1000);
   }
 });
@@ -141,14 +224,4 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!phoneInput.value.trim().startsWith('+55')) {
         phoneInput.value = '+55';
         setTimeout(() => {
-          phoneInput.setSelectionRange(phoneInput.value.length, phoneInput.value.length);
-        }, 1);
-      }
-    });
-    phoneInput.addEventListener('blur', () => {
-      if (phoneInput.value.trim() === '+55') {
-        phoneInput.value = '';
-      }
-    });
-  }
-});
+          phoneInput.setSelectionRange(phoneInput

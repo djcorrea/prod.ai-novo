@@ -1,3 +1,4 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -20,12 +21,26 @@
   <div class="particles"></div>
 
   <div class="container fade-in">
-    <header class="header">
+    <header class="header" id="header">
       <h1 class="logo">Prod.AI</h1>
       <p class="subtitle">Seu mentor virtual inteligente</p>
     </header>
 
-    <div class="chat-container">
+    <!-- Texto motivacional -->
+    <div class="motivational-text" id="motivationalText">
+      "Qual sua dúvida na produção musical hoje? Estou aqui para resolver qualquer problema!"
+    </div>
+
+    <!-- Input inicial centralizado -->
+    <div class="initial-input-container" id="initialInputContainer">
+      <input type="text" id="initialInput" class="initial-input" placeholder="Digite aqui..." autocomplete="off" />
+      <button class="initial-send-btn" id="initialSendBtn">
+        ✈️
+      </button>
+    </div>
+
+    <!-- Chat container (inicialmente oculto) -->
+    <div class="chat-container" id="chatContainer">
       <div class="chatbox" id="chatbox">
         <div class="message bot">
           <div class="message-content">
@@ -57,7 +72,6 @@
 
     <footer class="footer">
       <div class="footer-buttons">
-        <!-- ALTERAÇÃO AQUI: index.html no lugar de planos.html -->
         <a href="planos.html" class="btn-plus">Assinar versão Plus</a>
         <button class="btn-plus" onclick="logout()">Sair</button>
       </div>
@@ -68,4 +82,3 @@
   <script src="script.js"></script>
 </body>
 </html>
-

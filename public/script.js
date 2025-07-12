@@ -1,4 +1,3 @@
-// ELEMENTOS DO DOM
 const chatbox = document.getElementById('chatbox');
 const input = document.getElementById('user-input');
 const sendBtn = document.getElementById('sendBtn');
@@ -6,7 +5,15 @@ const typingIndicator = document.getElementById('typingIndicator');
 let isFirstMessage = true;
 let conversationHistory = [];
 
-// FUNÇÃO: Adiciona mensagem
+// Animação ao enviar a primeira mensagem
+function animateStart() {
+  const header = document.getElementById('prodaiHeader');
+  const container = document.getElementById('chatContainer');
+  header.classList.add('moved-to-top');
+  container.classList.add('expanded');
+}
+
+// Adiciona mensagem no chat
 function appendMessage(content, className) {
   const messageDiv = document.createElement('div');
   messageDiv.className = `message ${className}`;
@@ -18,26 +25,21 @@ function appendMessage(content, className) {
   chatbox.scrollTop = chatbox.scrollHeight;
 }
 
-// FUNÇÃO: Mostra/esconde indicador
 function showTypingIndicator() {
   typingIndicator.style.display = 'flex';
   chatbox.scrollTop = chatbox.scrollHeight;
 }
+
 function hideTypingIndicator() {
   typingIndicator.style.display = 'none';
 }
 
-// FUNÇÃO: Envia mensagem
 async function sendMessage() {
   const message = input.value.trim();
   if (!message || sendBtn.disabled) return;
 
-  // Animação da primeira mensagem
   if (isFirstMessage) {
-    const header = document.getElementById('prodaiHeader');
-    const container = document.getElementById('chatContainer');
-    header.classList.add('moved-to-top');
-    container.classList.add('expanded');
+    animateStart();
     isFirstMessage = false;
   }
 
@@ -101,12 +103,12 @@ async function sendMessage() {
     sendBtn.disabled = false;
     sendBtn.innerHTML = `
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>
-      </svg>Enviar`;
+        <path d="M2 21L23 12L2 3V10L17 12L2 14V21Z" fill="currentColor"/>
+      </svg>`;
   }
 }
 
-// EVENTOS
+// Eventos
 input?.addEventListener('keydown', e => {
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault();
@@ -118,7 +120,7 @@ sendBtn?.addEventListener('click', e => {
   sendMessage();
 });
 
-// MENSAGEM INICIAL
+// Saudação inicial
 window.addEventListener('load', function() {
   if (input) {
     input.focus();
@@ -131,7 +133,7 @@ window.addEventListener('load', function() {
   }
 });
 
-// +55 automático
+// +55 automático para input de telefone (caso tenha)
 document.addEventListener('DOMContentLoaded', () => {
   const phoneInput = document.getElementById('phone');
   if (phoneInput) {

@@ -5,43 +5,59 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Prod.AI - Mentor Virtual</title>
   <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore-compat.js"></script>
+  <!-- FingerprintJS caso use no chat também -->
   <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
+  <!-- Seu auth.js -->
   <script src="auth.js" defer></script>
 </head>
 <body>
   <div class="particles"></div>
 
-  <!-- Cabeçalho animado -->
-  <div class="prodai-header" id="prodaiHeader">
-    <div class="logo">Prod.AI</div>
-    <p class="subtitle">Seu mentor virtual inteligente</p>
-  </div>
+  <div class="container fade-in">
+    <header class="header">
+      <h1 class="logo">Prod.AI</h1>
+      <p class="subtitle">Seu mentor virtual inteligente</p>
+    </header>
 
-  <div class="container fade-in chat-container" id="chatContainer">
-    <div class="chatbox" id="chatbox"></div>
-
-    <div class="typing-indicator" id="typingIndicator">
-      <div class="typing-dots">
-        <span></span><span></span><span></span>
+    <div class="chat-container">
+      <div class="chatbox" id="chatbox">
+        <div class="message bot">
+          <div class="message-content">
+            <strong>Assistente:</strong> Olá! Sou seu mentor virtual. Como posso te ajudar hoje?
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div class="input-container chat-input-expanded" id="expandedInput">
-      <input type="text" id="user-input" placeholder="Digite sua mensagem..." autocomplete="off" />
-      <button onclick="sendMessage()" id="sendBtn" class="btn-plus">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M2 21L23 12L2 3V10L17 12L2 14V21Z" fill="currentColor"/>
-        </svg>
-      </button>
+      <div class="typing-indicator" id="typingIndicator">
+        <div class="typing-dots">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <span class="typing-text">Assistente está digitando...</span>
+      </div>
+
+      <div class="input-container">
+        <input type="text" id="user-input" placeholder="Digite sua mensagem..." autocomplete="off" />
+        <button onclick="sendMessage()" id="sendBtn" class="btn-plus">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m22 2-7 20-4-9-9-4Z"/>
+            <path d="M22 2 11 13"/>
+          </svg>
+          Enviar
+        </button>
+      </div>
     </div>
 
     <footer class="footer">
       <div class="footer-buttons">
+        <!-- ALTERAÇÃO AQUI: index.html no lugar de planos.html -->
         <a href="planos.html" class="btn-plus">Assinar versão Plus</a>
         <button class="btn-plus" onclick="logout()">Sair</button>
       </div>
@@ -52,3 +68,4 @@
   <script src="script.js"></script>
 </body>
 </html>
+

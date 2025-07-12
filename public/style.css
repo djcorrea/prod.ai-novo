@@ -319,51 +319,21 @@ button svg {
   color: #a855f7;
 }
 
-/* PREMIUM PLUS BUTTON */
 .btn-plus {
-  background: linear-gradient(90deg, #ff26fb 0%, #9408ff 100%);
-  color: #fff;
-  padding: 12px 26px;
-  border-radius: 12px;
-  font-weight: 800;
+  background: linear-gradient(to right, #9a00ff, #5f00ff);
+  color: #ffffff;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: bold;
   text-decoration: none;
-  font-size: 1.08rem;
-  letter-spacing: 0.5px;
-  border: 2px solid #ffdb75; /* contorno dourado premium */
-  box-shadow: 
-    0 0 25px 4px #ad00ffcc,     /* brilho roxo forte */
-    0 0 60px 16px #a966ff44,    /* aura suave ao redor */
-    0 0 0 5px #ffdb7536;        /* glow dourado externo */
-  transition: 
-    box-shadow 0.2s, 
-    filter 0.25s, 
-    transform 0.18s;
-  position: relative;
-  overflow: visible;
-  z-index: 10;
-  animation: btnPlusGlow 2.2s infinite alternate;
+  box-shadow: 0 0 10px rgba(159, 0, 255, 0.6);
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: none;
 }
+
 .btn-plus:hover {
-  filter: brightness(1.12) saturate(1.15);
-  transform: scale(1.06) rotate(-1deg);
-  box-shadow: 
-    0 0 45px 12px #e687ffcc,
-    0 0 100px 30px #a966ff44,
-    0 0 0 8px #ffdb7596;
-}
-@keyframes btnPlusGlow {
-  from {
-    box-shadow: 
-      0 0 22px 4px #ad00ffcc, 
-      0 0 44px 16px #a966ff33,
-      0 0 0 5px #ffdb7536;
-  }
-  to {
-    box-shadow: 
-      0 0 35px 8px #c05eff, 
-      0 0 100px 28px #e687ff33,
-      0 0 0 14px #ffdb7596;
-  }
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(159, 0, 255, 0.8);
 }
 
 /* MENSAGENS DE ERRO E SUCESSO */

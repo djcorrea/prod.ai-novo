@@ -1,6 +1,6 @@
 /* RESET */
 * {
-margin: 0;
+  margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
@@ -334,6 +334,28 @@ button svg {
 .btn-plus:hover {
   transform: scale(1.05);
   box-shadow: 0 0 15px rgba(159, 0, 255, 0.8);
+}
+
+/* MENSAGENS DE ERRO E SUCESSO */
+.error-message {
+  background: rgba(255,0,0,0.2);
+  color: #ff6961;
+  padding: 0.75rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  display: none;
+  font-weight: 600;
+  text-align: center;
+}
+.success-message {
+  background: rgba(0,200,0,0.14);
+  color: #18bb4a;
+  padding: 0.75rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  display: none;
+  font-weight: 600;
+  text-align: center;
 }
 
 @media (max-width: 768px) {

@@ -22,7 +22,7 @@ const firebaseErrorsPt = {
   'auth/user-disabled':                'Usuário desativado.',
   'auth/code-expired':                 'O código expirou. Solicite um novo.',
   'auth/invalid-verification-code':    'Código de verificação inválido.',
-  'auth/captcha-check-failed':         'Falha na verificação do reCAPTCHA.',
+  'auth/captcha-check-failed':         'Não foi possível validar este número. Certifique-se de que digitou corretamente, com DDD e sem espaços. Isso pode acontecer se o número não existir, estiver errado ou se houver erro no reCAPTCHA.',
   'auth/network-request-failed':       'Falha de conexão com a internet.',
   'auth/app-not-authorized':           'App não autorizado. Verifique as configurações do Firebase.',
   'auth/session-expired':              'Sessão expirada. Tente novamente.',

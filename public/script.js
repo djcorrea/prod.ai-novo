@@ -8,32 +8,9 @@ let conversationHistory = [];
 // Animação ao enviar a primeira mensagem
 function animateStart() {
   const header = document.getElementById('prodaiHeader');
-  const container = document.getElementById('mainContainer');
-  const chatContainer = document.getElementById('chatContainer');
-  const body = document.body;
-  
-  // Adiciona efeito de transição
-  container.classList.add('transitioning');
-  
-  setTimeout(() => {
-    // Remove efeito de blur
-    container.classList.remove('transitioning');
-    
-    // Aplica as animações
-    header.classList.add('moved-to-top');
-    container.classList.add('expanded');
-    body.classList.add('header-fixed');
-    
-    // Ajusta scroll após expansão
-    setTimeout(() => {
-      chatbox.scrollTop = chatbox.scrollHeight;
-      
-      // Foca no input após animação
-      if (input) {
-        input.focus();
-      }
-    }, 600);
-  }, 150);
+  const container = document.getElementById('chatContainer');
+  header.classList.add('moved-to-top');
+  container.classList.add('expanded');
 }
 
 // Adiciona mensagem no chat
@@ -149,7 +126,7 @@ window.addEventListener('load', function() {
     input.focus();
     setTimeout(() => {
       appendMessage(
-        '<strong>Assistente:</strong> 👋 Olá! Sou o <span style="color: #9333ea; font-weight: 600;">Prod.AI</span>, seu mentor especializado em produção musical. Digite sua primeira pergunta para começarmos!',
+        '<strong>Assistente:</strong> 🎵 Bem-vindo! Sou seu mentor especializado em produção musical. O que você gostaria de aprender hoje?',
         'bot'
       );
     }, 1000);

@@ -245,41 +245,31 @@ input[type="text"]::placeholder {
   color: rgba(255, 255, 255, 0.5);
 }
 
-button {
-  padding: 1rem 1.5rem;
-  background: linear-gradient(135deg, #9333ea, #7c3aed);
+/* BOTÕES PRINCIPAIS - ENTRAR, CADASTRAR, ETC */
+.btn-main {
+  background: linear-gradient(90deg, #9a00ff 0%, #5f00ff 100%);
+  color: #fff;
   border: none;
-  border-radius: 16px;
-  color: white;
+  border-radius: 12px;
   font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
   font-size: 1rem;
+  padding: 0.9rem 1rem;
+  min-width: 160px;
+  margin-bottom: 0;
+  margin-top: 0;
+  margin-right: 0;
+  margin-left: 0;
+  box-shadow: 0 0 15px 3px rgba(159, 0, 255, 0.15), 0 2px 16px 0 rgba(147,51,234,0.12);
+  cursor: pointer;
+  transition: 0.18s;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  box-shadow: 0 8px 16px rgba(147, 51, 234, 0.3);
-  font-family: 'Inter', sans-serif;
+  justify-content: center;
 }
 
-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(147, 51, 234, 0.4);
-}
-
-button:active {
-  transform: translateY(0);
-}
-
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-button svg {
-  width: 18px;
-  height: 18px;
+.btn-main:active {
+  filter: brightness(0.95);
+  transform: scale(0.98);
 }
 
 /* Footer atualizado */
@@ -377,7 +367,7 @@ button svg {
     gap: 0.75rem;
   }
 
-  button {
+  button, .btn-main {
     width: 100%;
     justify-content: center;
   }

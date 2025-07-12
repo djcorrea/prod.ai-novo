@@ -223,7 +223,7 @@ body {
   align-items: center;
 }
 
-input[type="text"], input[type="email"], input[type="password"], input[type="tel"] {
+input[type="text"] {
   flex: 1;
   padding: 1rem 1.5rem;
   border: 2px solid rgba(147, 51, 234, 0.3);
@@ -236,49 +236,39 @@ input[type="text"], input[type="email"], input[type="password"], input[type="tel
   font-family: 'Inter', sans-serif;
 }
 
-input[type="text"]:focus,
-input[type="email"]:focus,
-input[type="password"]:focus,
-input[type="tel"]:focus {
+input[type="text"]:focus {
   border-color: #9333ea;
   box-shadow: 0 0 0 4px rgba(147, 51, 234, 0.2);
 }
 
-input[type="text"]::placeholder,
-input[type="email"]::placeholder,
-input[type="password"]::placeholder,
-input[type="tel"]::placeholder {
+input[type="text"]::placeholder {
   color: rgba(255, 255, 255, 0.5);
 }
 
-/* BOTÕES PRINCIPAIS - TODOS IGUAIS AO ASSINAR VERSÃO PLUS */
-.btn-main, .btn-plus, .btn-send, .btn-logout, #logoutBtn, .logout-btn, button#logoutBtn {
-  background: linear-gradient(90deg, #c300ff 0%, #7e0fff 100%);
-  color: #fff;
+button {
+  padding: 1rem 1.5rem;
+  background: linear-gradient(135deg, #9333ea, #7c3aed);
   border: none;
-  border-radius: 12px;
+  border-radius: 16px;
+  color: white;
   font-weight: 600;
-  font-size: 1rem;
-  padding: 0.9rem 1.5rem;
-  min-width: 160px;
-  box-shadow: 0 0 18px 3px rgba(159,0,255,0.20), 0 2px 16px 0 rgba(147,51,234,0.16);
   cursor: pointer;
-  transition: 0.18s;
+  transition: all 0.3s ease;
+  font-size: 1rem;
   display: flex;
   align-items: center;
-  justify-content: center;
-  margin: 0.3rem 0.3rem 0.3rem 0;
-  outline: none;
-  text-align: center;
+  gap: 0.5rem;
+  box-shadow: 0 8px 16px rgba(147, 51, 234, 0.3);
+  font-family: 'Inter', sans-serif;
 }
 
-.btn-main:active, .btn-plus:active, .btn-send:active, .btn-logout:active, #logoutBtn:active, .logout-btn:active, button#logoutBtn:active {
-  filter: brightness(0.94);
-  transform: scale(0.97);
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(147, 51, 234, 0.4);
 }
 
-.btn-main:hover, .btn-plus:hover, .btn-send:hover, .btn-logout:hover, #logoutBtn:hover, .logout-btn:hover, button#logoutBtn:hover {
-  box-shadow: 0 0 24px 6px rgba(159,0,255,0.30);
+button:active {
+  transform: translateY(0);
 }
 
 button:disabled {
@@ -329,6 +319,23 @@ button svg {
   color: #a855f7;
 }
 
+.btn-plus {
+  background: linear-gradient(to right, #9a00ff, #5f00ff);
+  color: #ffffff;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 0 10px rgba(159, 0, 255, 0.6);
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: none;
+}
+
+.btn-plus:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(159, 0, 255, 0.8);
+}
+
 /* MENSAGENS DE ERRO E SUCESSO */
 .error-message {
   background: rgba(255,0,0,0.2);
@@ -351,7 +358,6 @@ button svg {
   text-align: center;
 }
 
-/* Responsividade */
 @media (max-width: 768px) {
   .container {
     padding: 1.5rem;
@@ -371,7 +377,7 @@ button svg {
     gap: 0.75rem;
   }
 
-  button, .btn-main {
+  button {
     width: 100%;
     justify-content: center;
   }

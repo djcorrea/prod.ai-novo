@@ -251,24 +251,53 @@ input[type="tel"]::placeholder {
   color: rgba(255, 255, 255, 0.5);
 }
 
-/* BOTÕES PADRÃO - ENTRAR, CADASTRAR, ENVIAR, SAIR */
+/* BOTÃO PADRÃO ROXO (DEGRADE) */
 .btn-main,
 .btn-plus,
-.btn-enviar,
-.btn-sair {
+.btn-send,
+.btn-logout {
   background: linear-gradient(90deg, #b024ff 0%, #8b31ff 100%);
   color: #fff;
   border: none;
   border-radius: 12px;
   font-weight: 600;
   font-size: 1rem;
-  padding: 0.9rem 1rem;
+  padding: 0.9rem 1.5rem;
   min-width: 160px;
   margin-bottom: 0;
   margin-top: 0;
   margin-right: 0;
   margin-left: 0;
-  box-shadow: 0 0 10px 0 rgba(176, 36, 255, 0.20), 0 2px 16px 0 rgba(147,51,234,0.12);
+  box-shadow: 0 0 15px 3px rgba(159, 0, 255, 0.15), 0 2px 16px 0 rgba(147,51,234,0.12);
+  cursor: pointer;
+  transition: 0.18s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.btn-main:active,
+.btn-plus:active,
+.btn-send:active,
+.btn-logout:active {
+  filter: brightness(0.95);
+  transform: scale(0.98);
+}
+
+/* Para o botão ENVIAR e SAIR */
+button#sendBtn, .btn-send,
+button#logoutBtn, .btn-logout {
+  background: linear-gradient(90deg, #b024ff 0%, #8b31ff 100%);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 0.9rem 1.5rem;
+  min-width: 160px;
+  margin: 0 0.3rem;
+  box-shadow: 0 0 15px 3px rgba(159, 0, 255, 0.15), 0 2px 16px 0 rgba(147,51,234,0.12);
   cursor: pointer;
   transition: 0.18s;
   display: flex;
@@ -276,36 +305,13 @@ input[type="tel"]::placeholder {
   justify-content: center;
 }
 
-.btn-main:active,
-.btn-plus:active,
-.btn-enviar:active,
-.btn-sair:active {
+button#sendBtn:active, .btn-send:active,
+button#logoutBtn:active, .btn-logout:active {
   filter: brightness(0.95);
   transform: scale(0.98);
 }
 
-.btn-main:hover,
-.btn-plus:hover,
-.btn-enviar:hover,
-.btn-sair:hover {
-  box-shadow: 0 0 18px 0 rgba(176, 36, 255, 0.45), 0 2px 16px 0 rgba(147,51,234,0.16);
-}
-
-/* Sair e Enviar menores */
-.btn-sair, .btn-enviar {
-  min-width: 100px;
-  padding: 0.8rem 1.2rem;
-  font-size: 1rem;
-  border-radius: 10px;
-}
-
-.btn-plus {
-  font-weight: bold;
-  border-radius: 10px;
-  min-width: 160px;
-  padding: 10px 20px;
-}
-
+/* Footer atualizado */
 .footer {
   display: flex;
   flex-direction: column;
@@ -383,7 +389,7 @@ input[type="tel"]::placeholder {
     gap: 0.75rem;
   }
 
-  button, .btn-main, .btn-plus, .btn-enviar, .btn-sair {
+  button, .btn-main, .btn-send, .btn-plus, .btn-logout {
     width: 100%;
     justify-content: center;
   }

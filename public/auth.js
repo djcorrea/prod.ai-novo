@@ -96,6 +96,21 @@ window.login = async function () {
   }
 };
 
+// --- ESQUECI A SENHA ---
+window.forgotPassword = async function() {
+  const email = document.getElementById("email").value.trim();
+  if (!email) {
+    showMessage("Digite seu e-mail para recuperar a senha.", "error");
+    return;
+  }
+  try {
+    await auth.sendPasswordResetEmail(email);
+    showMessage("Enviamos um link de redefinição de senha para seu e-mail.", "success");
+  } catch (error) {
+    showMessage(error, "error");
+  }
+};
+
 // Função para enviar SMS - agora chamada dentro de signUp
 async function sendSMS(phone) {
   // Checar telefone já cadastrado
@@ -115,7 +130,7 @@ async function sendSMS(phone) {
   try {
     confirmationResult = await auth.signInWithPhoneNumber(phone, window.recaptchaVerifier);
     lastPhone = phone;
-    showMessage("Código SMS enviado! Digite o código recebido.", "success"); // <- AGORA VERDE!
+    showMessage("Código SMS enviado! Digite o código recebido.", "success");
     window.showSMSSection();
     return true;
   } catch (error) {
@@ -234,5 +249,16 @@ auth.onAuthStateChanged(async (user) => {
   if (user) {
     const idToken = await user.getIdToken();
     localStorage.setItem("idToken", idToken);
+  }
+});
+
+// EVENTO PARA "ESQUECI A SENHA" NO LINK
+document.addEventListener("DOMContentLoaded", function() {
+  const forgot = document.getElementById("forgotPasswordLink");
+  if (forgot) {
+    forgot.addEventListener("click", function(e) {
+      e.preventDefault();
+      window.forgotPassword();
+    });
   }
 });

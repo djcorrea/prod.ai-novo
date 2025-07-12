@@ -319,21 +319,44 @@ button svg {
   color: #a855f7;
 }
 
+/* BOTÃO PLUS PREMIUM DESTACADO */
 .btn-plus {
-  background: linear-gradient(to right, #9a00ff, #5f00ff);
-  color: #ffffff;
-  padding: 10px 20px;
-  border-radius: 10px;
+  background: linear-gradient(92deg, #ffe700 0%, #f7b900 60%, #ff8a00 100%);
+  color: #241a00;
+  padding: 13px 28px;
+  border-radius: 14px;
   font-weight: bold;
   text-decoration: none;
-  box-shadow: 0 0 10px rgba(159, 0, 255, 0.6);
-  transition: transform 0.2s, box-shadow 0.2s;
-  border: none;
+  font-size: 1.09rem;
+  letter-spacing: 1px;
+  border: 2.2px solid #fffbe7;
+  box-shadow: 0 0 20px 2px #ffe70099, 0 0 50px 5px #ffbb0099, 0 4px 32px 0 #ffd70044;
+  transition: transform 0.18s, box-shadow 0.22s, background 0.22s;
+  animation: btnPlusPulse 1.6s infinite;
+  display: inline-block;
+}
+
+@keyframes btnPlusPulse {
+  0% {
+    box-shadow: 0 0 20px 2px #ffe70099, 0 0 50px 5px #ffbb0099, 0 4px 32px 0 #ffd70044;
+    filter: brightness(1) saturate(1.2);
+  }
+  50% {
+    box-shadow: 0 0 35px 8px #ffe700cc, 0 0 70px 16px #ffd700bb, 0 8px 50px 2px #ffb30077;
+    filter: brightness(1.08) saturate(1.6);
+  }
+  100% {
+    box-shadow: 0 0 20px 2px #ffe70099, 0 0 50px 5px #ffbb0099, 0 4px 32px 0 #ffd70044;
+    filter: brightness(1) saturate(1.2);
+  }
 }
 
 .btn-plus:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 15px rgba(159, 0, 255, 0.8);
+  background: linear-gradient(90deg, #fffbe7 10%, #ffd700 80%, #ffb300 100%);
+  color: #5e4800;
+  transform: scale(1.06);
+  box-shadow: 0 0 60px 16px #ffe700e0, 0 4px 40px 6px #ffbb00c7;
+  filter: brightness(1.15) saturate(1.7);
 }
 
 /* MENSAGENS DE ERRO E SUCESSO */

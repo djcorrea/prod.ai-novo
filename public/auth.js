@@ -35,8 +35,8 @@ const firebaseErrorsPt = {
   // ...adicione outros erros conforme necessário
 };
 
-// Função para exibir o erro traduzido
-function showError(messageOrError) {
+// Função para exibir mensagem de sucesso ou erro
+function showMessage(messageOrError, type = "error") {
   let msg = typeof messageOrError === 'object' && messageOrError.code
     ? (firebaseErrorsPt[messageOrError.code] || messageOrError.message || 'Erro desconhecido.')
     : messageOrError;
@@ -45,6 +45,8 @@ function showError(messageOrError) {
   if (el) {
     el.innerText = msg;
     el.style.display = "block";
+    el.classList.remove("error-message", "success-message");
+    el.classList.add(type === "success" ? "success-message" : "error-message");
   } else {
     alert(msg);
   }
@@ -89,7 +91,7 @@ window.login = async function () {
     localStorage.setItem("idToken", idToken);
     window.location.href = "index.html";
   } catch (error) {
-    showError(error);
+    showMessage(error, "error");
     console.error(error);
   }
 };
@@ -99,7 +101,7 @@ async function sendSMS(phone) {
   // Checar telefone já cadastrado
   const phoneSnap = await db.collection("phones").doc(phone).get();
   if (phoneSnap.exists) {
-    showError("Esse telefone já está cadastrado em outra conta!");
+    showMessage("Esse telefone já está cadastrado em outra conta!", "error");
     return false;
   }
 
@@ -113,11 +115,11 @@ async function sendSMS(phone) {
   try {
     confirmationResult = await auth.signInWithPhoneNumber(phone, window.recaptchaVerifier);
     lastPhone = phone;
-    showError("Código SMS enviado! Digite o código recebido.");
+    showMessage("Código SMS enviado! Digite o código recebido.", "success"); // <- AGORA VERDE!
     window.showSMSSection();
     return true;
   } catch (error) {
-    showError(error);
+    showMessage(error, "error");
     return false;
   }
 }
@@ -129,7 +131,7 @@ window.signUp = async function () {
   const phone    = document.getElementById("phone").value.trim();
 
   if (!email || !password || !phone) {
-    showError("Preencha todos os campos.");
+    showMessage("Preencha todos os campos.", "error");
     return;
   }
 
@@ -140,7 +142,7 @@ window.signUp = async function () {
     return; // Espera o usuário digitar código e chamar confirmSMSCode
   }
 
-  showError("Código SMS enviado! Digite o código recebido no campo abaixo.");
+  showMessage("Código SMS enviado! Digite o código recebido no campo abaixo.", "success");
 };
 
 // --- CONFIRMAR CÓDIGO SMS E FINALIZAR CADASTRO ---
@@ -151,7 +153,7 @@ window.confirmSMSCode = async function() {
   const code     = document.getElementById("smsCode").value.trim();
 
   if (!code || code.length < 6) {
-    showError("Digite o código recebido por SMS.");
+    showMessage("Digite o código recebido por SMS.", "error");
     return;
   }
 
@@ -162,21 +164,21 @@ window.confirmSMSCode = async function() {
     // Obter fingerprint
     const fingerprint = await getFingerprint();
     if (!fingerprint) {
-      showError("Erro ao identificar seu navegador. Tente novamente.");
+      showMessage("Erro ao identificar seu navegador. Tente novamente.", "error");
       return;
     }
 
     // Checar se já tem cadastro com essa fingerprint
     const fpQuery = await db.collection("fingerprints").doc(fingerprint).get();
     if (fpQuery.exists) {
-      showError("Você já criou uma conta gratuita neste navegador. Faça login ou assine o plano Plus.");
+      showMessage("Você já criou uma conta gratuita neste navegador. Faça login ou assine o plano Plus.", "error");
       return;
     }
 
     // Checar se telefone já cadastrado
     const phoneSnap = await db.collection("phones").doc(phone).get();
     if (phoneSnap.exists) {
-      showError("Esse telefone já está cadastrado em outra conta!");
+      showMessage("Esse telefone já está cadastrado em outra conta!", "error");
       return;
     }
 
@@ -195,7 +197,7 @@ window.confirmSMSCode = async function() {
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
 
-    showError("Cadastro realizado com sucesso! Faça login para acessar a plataforma.");
+    showMessage("Cadastro realizado com sucesso! Faça login para acessar a plataforma.", "success");
     await auth.signOut();
 
     // Reabilitar botão cadastrar e esconder seção SMS
@@ -209,7 +211,7 @@ window.confirmSMSCode = async function() {
     }
 
   } catch (error) {
-    showError(error);
+    showMessage(error, "error");
     console.error(error);
   }
 };

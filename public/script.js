@@ -1,14 +1,12 @@
-// script.js
-
-// ─── ELEMENTOS DO DOM ─────────────────────────────────────
+// ELEMENTOS DO DOM
 const chatbox = document.getElementById('chatbox');
 const input = document.getElementById('user-input');
 const sendBtn = document.getElementById('sendBtn');
 const typingIndicator = document.getElementById('typingIndicator');
-
+let isFirstMessage = true;
 let conversationHistory = [];
 
-// ─── FUNÇÕES DE CHAT ──────────────────────────────────────
+// FUNÇÃO: Adiciona mensagem
 function appendMessage(content, className) {
   const messageDiv = document.createElement('div');
   messageDiv.className = `message ${className}`;
@@ -20,18 +18,28 @@ function appendMessage(content, className) {
   chatbox.scrollTop = chatbox.scrollHeight;
 }
 
+// FUNÇÃO: Mostra/esconde indicador
 function showTypingIndicator() {
   typingIndicator.style.display = 'flex';
   chatbox.scrollTop = chatbox.scrollHeight;
 }
-
 function hideTypingIndicator() {
   typingIndicator.style.display = 'none';
 }
 
+// FUNÇÃO: Envia mensagem
 async function sendMessage() {
   const message = input.value.trim();
   if (!message || sendBtn.disabled) return;
+
+  // Animação da primeira mensagem
+  if (isFirstMessage) {
+    const header = document.getElementById('prodaiHeader');
+    const container = document.getElementById('chatContainer');
+    header.classList.add('moved-to-top');
+    container.classList.add('expanded');
+    isFirstMessage = false;
+  }
 
   appendMessage(`<strong>Você:</strong> ${message}`, 'user');
   input.value = '';
@@ -45,10 +53,7 @@ async function sendMessage() {
   try {
     const user = firebase.auth().currentUser;
     if (!user) {
-      appendMessage(
-        `<strong>Assistente:</strong> Você precisa estar logado para usar o chat.<br>Por favor, faça login para continuar.`,
-        'bot'
-      );
+      appendMessage(`<strong>Assistente:</strong> Você precisa estar logado para usar o chat.`, 'bot');
       hideTypingIndicator();
       sendBtn.disabled = false;
       sendBtn.innerHTML = 'Enviar';
@@ -69,8 +74,8 @@ async function sendMessage() {
     } catch {
       hideTypingIndicator();
       appendMessage(
-        `<strong>Assistente:</strong> 🚫 Você atingiu o limite de <strong>10 mensagens diárias</strong> na versão gratuita.<br><br>` +
-        `🔓 <a href="planos.html" class="btn-plus" target="_blank">Clique aqui para assinar a versão Plus</a> e liberar mensagens ilimitadas.`,
+        `<strong>Assistente:</strong> 🚫 Você atingiu o limite de <strong>10 mensagens diárias</strong>.<br><br>` +
+        `🔓 <a href="planos.html" class="btn-plus" target="_blank">Assinar versão Plus</a>`,
         'bot'
       );
       return;
@@ -79,8 +84,8 @@ async function sendMessage() {
     hideTypingIndicator();
     if (data.error && data.error.toLowerCase().includes('limite diário')) {
       appendMessage(
-        `<strong>Assistente:</strong> 🚫 Você atingiu o limite de <strong>10 mensagens diárias</strong> na versão gratuita.<br><br>` +
-        `🔓 <a href="planos.html" class="btn-plus" target="_blank">Clique aqui para assinar a versão Plus</a> e liberar mensagens ilimitadas.`,
+        `<strong>Assistente:</strong> 🚫 Você atingiu o limite de <strong>10 mensagens diárias</strong>.<br><br>` +
+        `🔓 <a href="planos.html" class="btn-plus" target="_blank">Assinar versão Plus</a>`,
         'bot'
       );
     } else if (data.reply) {
@@ -91,10 +96,7 @@ async function sendMessage() {
     }
   } catch (err) {
     hideTypingIndicator();
-    appendMessage(
-      `<strong>Assistente:</strong> Erro ao se conectar com o servidor.`,
-      'bot'
-    );
+    appendMessage(`<strong>Assistente:</strong> Erro ao se conectar com o servidor.`, 'bot');
   } finally {
     sendBtn.disabled = false;
     sendBtn.innerHTML = `
@@ -104,32 +106,23 @@ async function sendMessage() {
   }
 }
 
-// ─── LISTENERS GLOBAIS ────────────────────────────────────
-if (input) {
-  input.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
-  });
-}
-
-if (sendBtn) {
-  sendBtn.addEventListener('click', function(e) {
+// EVENTOS
+input?.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault();
     sendMessage();
-  });
-}
+  }
+});
+sendBtn?.addEventListener('click', e => {
+  e.preventDefault();
+  sendMessage();
+});
 
-// REMOVIDO: Qualquer listener que envia para planos.html em botões.
-// O link <a href="planos.html" ...> continua funcionando normalmente.
-
-
-// Saudação inicial
+// MENSAGEM INICIAL
 window.addEventListener('load', function() {
   if (input) {
     input.focus();
-    setTimeout(function() {
+    setTimeout(() => {
       appendMessage(
         '<strong>Assistente:</strong> 🎵 Bem-vindo! Sou seu mentor especializado em produção musical. O que você gostaria de aprender hoje?',
         'bot'
@@ -138,11 +131,11 @@ window.addEventListener('load', function() {
   }
 });
 
-// ─── +55 AUTOMÁTICO NO INPUT DE CELULAR ──────────────────────────────
-document.addEventListener('DOMContentLoaded', function() {
+// +55 automático
+document.addEventListener('DOMContentLoaded', () => {
   const phoneInput = document.getElementById('phone');
   if (phoneInput) {
-    phoneInput.addEventListener('focus', function() {
+    phoneInput.addEventListener('focus', () => {
       if (!phoneInput.value.trim().startsWith('+55')) {
         phoneInput.value = '+55';
         setTimeout(() => {
@@ -150,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 1);
       }
     });
-    phoneInput.addEventListener('blur', function() {
+    phoneInput.addEventListener('blur', () => {
       if (phoneInput.value.trim() === '+55') {
         phoneInput.value = '';
       }

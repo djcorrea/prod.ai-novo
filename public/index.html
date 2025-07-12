@@ -11,53 +11,54 @@
   <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore-compat.js"></script>
-  <!-- FingerprintJS caso use no chat também -->
   <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
-  <!-- Seu auth.js -->
   <script src="auth.js" defer></script>
+  <style>
+    body { overflow-x: hidden; }
+  </style>
 </head>
 <body>
   <div class="particles"></div>
 
-  <div class="container fade-in">
-    <header class="header">
-      <h1 class="logo">Prod.AI</h1>
-      <p class="subtitle">Seu mentor virtual inteligente</p>
-    </header>
+  <!-- Cabeçalho Animado -->
+  <div class="prodai-header" id="prodaiHeader">
+    <div class="logo">Prod.AI</div>
+    <p class="subtitle">Seu mentor virtual inteligente</p>
+  </div>
 
-    <div class="chat-container">
-      <div class="chatbox" id="chatbox">
-        <div class="message bot">
-          <div class="message-content">
-            <strong>Assistente:</strong> Olá! Sou seu mentor virtual. Como posso te ajudar hoje?
-          </div>
+  <!-- Container principal do chat -->
+  <div class="container fade-in chat-container" id="chatContainer">
+    <!-- Caixa do chat -->
+    <div class="chatbox" id="chatbox">
+      <div class="message bot">
+        <div class="message-content">
+          <strong>Assistente:</strong> Olá! Sou seu mentor virtual. Como posso te ajudar hoje?
         </div>
-      </div>
-
-      <div class="typing-indicator" id="typingIndicator">
-        <div class="typing-dots">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
-        <span class="typing-text">Assistente está digitando...</span>
-      </div>
-
-      <div class="input-container">
-        <input type="text" id="user-input" placeholder="Digite sua mensagem..." autocomplete="off" />
-        <button onclick="sendMessage()" id="sendBtn" class="btn-plus">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="m22 2-7 20-4-9-9-4Z"/>
-            <path d="M22 2 11 13"/>
-          </svg>
-          Enviar
-        </button>
       </div>
     </div>
 
+    <!-- Indicador de digitação -->
+    <div class="typing-indicator" id="typingIndicator">
+      <div class="typing-dots">
+        <span></span><span></span><span></span>
+      </div>
+      <span class="typing-text">Assistente está digitando...</span>
+    </div>
+
+    <!-- Campo de entrada -->
+    <div class="input-container chat-input-expanded" id="expandedInput">
+      <input type="text" id="user-input" placeholder="Digite sua mensagem..." autocomplete="off" />
+      <button onclick="sendMessage()" id="sendBtn" class="btn-plus">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>
+        </svg>
+        Enviar
+      </button>
+    </div>
+
+    <!-- Rodapé com botões -->
     <footer class="footer">
       <div class="footer-buttons">
-        <!-- ALTERAÇÃO AQUI: index.html no lugar de planos.html -->
         <a href="planos.html" class="btn-plus">Assinar versão Plus</a>
         <button class="btn-plus" onclick="logout()">Sair</button>
       </div>
@@ -66,6 +67,35 @@
   </div>
 
   <script src="script.js"></script>
+  <script>
+    let isFirstMessage = true;
+
+    function animateHeaderAndChat() {
+      const header = document.getElementById('prodaiHeader');
+      const chat = document.getElementById('chatContainer');
+      header.classList.add('moved-to-top');
+      chat.classList.add('expanded');
+    }
+
+    function interceptFirstMessage() {
+      const btn = document.getElementById('sendBtn');
+      const input = document.getElementById('user-input');
+      if (!btn || !input) return;
+
+      const originalSend = sendMessage;
+
+      window.sendMessage = function () {
+        if (isFirstMessage) {
+          animateHeaderAndChat();
+          isFirstMessage = false;
+        }
+        originalSend();
+      };
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      interceptFirstMessage();
+    });
+  </script>
 </body>
 </html>
-

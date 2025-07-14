@@ -173,6 +173,27 @@ async function sendSMS(rawPhone) {
   }
 }
 
+window.signUp = async function () {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const rawPhone = document.getElementById("phone").value.trim();
+
+  if (!email || !password || !rawPhone) {
+    showMessage("Preencha todos os campos.", "error");
+    return;
+  }
+
+  const formattedPhone = '+55' + rawPhone.replace(/\D/g, '').replace(/^55/, '');
+
+  if (!confirmationResult || lastPhone !== formattedPhone) {
+    const sent = await sendSMS(rawPhone);
+    if (!sent) return;
+    return;
+  }
+
+  showMessage("Código SMS enviado! Digite o código recebido no campo abaixo.", "success");
+};
+
 
 window.register = window.signUp;
 

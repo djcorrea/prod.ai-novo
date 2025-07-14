@@ -194,6 +194,79 @@ window.signUp = async function () {
   showMessage("Código SMS enviado! Digite o código recebido no campo abaixo.", "success");
 };
 
+window.confirmSMSCode = async function () {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const code = document.getElementById("smsCode").value.trim();
+
+  if (!code || code.length < 6) {
+    showMessage("Digite o código recebido por SMS.", "error");
+    return;
+  }
+
+  try {
+    await confirmationResult.confirm(code);
+
+    const fingerprint = await getFingerprint();
+    if (!fingerprint) {
+      showMessage("Erro ao identificar seu navegador. Tente novamente.", "error");
+      return;
+    }
+
+    const fpQuery = await db.collection("fingerprints").doc(fingerprint).get();
+    if (fpQuery.exists) {
+      showMessage("Você já criou uma conta gratuita neste navegador. Faça login ou assine o plano Plus.", "error");
+      return;
+    }
+
+    const phoneSnap = await db.collection("phones").doc(phone).get();
+    if (phoneSnap.exists) {
+      showMessage("Esse telefone já está cadastrado em outra conta!", "error");
+      return;
+    }
+
+    const result = await auth.createUserWithEmailAndPassword(email, password);
+    const user = result.user;
+    const hoje = new Date().toISOString().split('T')[0];
+
+    await db.collection("usuarios").doc(user.uid).set({
+      uid: user.uid,
+      email: email,
+      plano: 'gratis',
+      mensagensHoje: 0,
+      ultimaData: hoje,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    await db.collection("fingerprints").doc(fingerprint).set({
+      email: email,
+      phone: phone,
+      uid: user.uid,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    await db.collection("phones").doc(phone).set({
+      email: email,
+      fingerprint: fingerprint,
+      uid: user.uid,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    showMessage("Cadastro realizado com sucesso! Faça login para acessar a plataforma.", "success");
+    await auth.signOut();
+
+    const signUpBtn = document.getElementById('signUpBtn');
+    if (signUpBtn) signUpBtn.disabled = false;
+    const smsSection = document.getElementById('sms-section');
+    if (smsSection) smsSection.style.display = 'none';
+
+  } catch (error) {
+    console.error("Erro no cadastro:", error);
+    showMessage(error, "error");
+  }
+};
+
 
 window.register = window.signUp;
 

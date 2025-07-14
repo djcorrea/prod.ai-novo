@@ -11,7 +11,8 @@
     "express": "^5.1.0",
     "firebase-admin": "^13.4.0",
     "mercadopago": "^2.8.0",
-    "node-fetch": "^2.6.7"
+    "node-fetch": "^2.6.7",
+    "firebase-functions": "^4.4.1"
   },
   "main": "index.js",
   "keywords": [],

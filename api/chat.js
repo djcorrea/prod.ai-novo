@@ -1,6 +1,6 @@
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
-import { getFirestore, FieldValue } from 'firebase-admin/firestore';
+import { getFirestore, FieldValue, Timestamp } from 'firebase-admin/firestore';
 
 let firebaseInitialized = false;
 
@@ -41,38 +41,53 @@ export default async function handler(req, res) {
 
     const uid = decoded.uid;
     const email = decoded.email;
-    const hoje = new Date().toISOString().split('T')[0];
-
     const userRef = db.collection('usuarios').doc(uid);
-    let userDoc = await userRef.get();
+    let userData;
 
-    // ✅ Se usuário não existir no Firestore, cria agora
-    if (!userDoc.exists) {
-      console.log("🆕 Criando novo usuário:", email);
-      await userRef.set({
-        uid,
-        email,
-        plano: 'gratis',
-        mensagensHoje: 0,
-        ultimaData: hoje,
-        createdAt: FieldValue.serverTimestamp()
+    try {
+      await db.runTransaction(async (tx) => {
+        const snap = await tx.get(userRef);
+        const now = Timestamp.now();
+        const today = now.toDate().toDateString();
+
+        if (!snap.exists) {
+          userData = {
+            uid,
+            email,
+            plano: 'gratis',
+            mensagensRestantes: 9,
+            dataUltimoReset: now,
+            createdAt: now,
+          };
+          tx.set(userRef, userData);
+          return;
+        }
+
+        userData = snap.data();
+        const lastReset = userData.dataUltimoReset?.toDate().toDateString();
+        if (lastReset !== today) {
+          userData.mensagensRestantes = 10;
+          tx.update(userRef, {
+            mensagensRestantes: 10,
+            dataUltimoReset: now,
+          });
+        }
+
+        if (userData.plano === 'gratis' && userData.mensagensRestantes <= 0) {
+          throw new Error('LIMIT');
+        }
+
+        tx.update(userRef, {
+          mensagensRestantes: FieldValue.increment(-1),
+        });
+        userData.mensagensRestantes = (userData.mensagensRestantes || 10) - 1;
       });
-      userDoc = await userRef.get();
-    }
-
-    const userData = userDoc.data();
-
-    // ✅ Reset diário
-    if (userData.ultimaData !== hoje) {
-      console.log("📅 Resetando contador de mensagens do dia.");
-      await userRef.update({ mensagensHoje: 0, ultimaData: hoje });
-      userData.mensagensHoje = 0;
-    }
-
-    // ✅ Verifica limite do plano gratuito
-    if (userData.plano === 'gratis' && userData.mensagensHoje >= 10) {
-      console.warn("🚫 Limite de mensagens atingido para:", email);
-      return res.status(403).json({ error: 'Limite diário atingido' });
+    } catch (err) {
+      if (err.message === 'LIMIT') {
+        console.warn('🚫 Limite de mensagens atingido para:', email);
+        return res.status(403).json({ error: 'Limite diário atingido' });
+      }
+      throw err;
     }
 
     const mensagensFiltradas = conversationHistory
@@ -113,8 +128,7 @@ export default async function handler(req, res) {
     const reply = data.choices[0].message.content.trim();
 
     if (userData.plano === 'gratis') {
-      await userRef.update({ mensagensHoje: FieldValue.increment(1) });
-      console.log("✅ Incrementando contador de mensagens para:", email);
+      console.log('✅ Mensagens restantes para', email, ':', userData.mensagensRestantes);
     }
 
     return res.status(200).json({ reply });

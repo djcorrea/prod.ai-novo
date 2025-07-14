@@ -167,6 +167,15 @@ async function sendSMS(phone) {
     window.recaptchaVerifier = null;
   }
 
+  // Garante que o elemento do reCAPTCHA exista
+  let recEl = document.getElementById('recaptcha-container');
+  if (!recEl) {
+    recEl = document.createElement('div');
+    recEl.id = 'recaptcha-container';
+    const btnGroup = document.querySelector('.button-group');
+    btnGroup?.parentNode.insertBefore(recEl, btnGroup);
+  }
+
   // Criar novo reCAPTCHA
   window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
     'size': 'invisible',

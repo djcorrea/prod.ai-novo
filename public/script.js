@@ -30,7 +30,6 @@ async function sendFirstMessage() {
     return;
   }
 
-  startSendBtn.addEventListener("click", async () => {
   const message = startInput.value.trim();
   if (!message) {
     startInput.focus();

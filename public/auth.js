@@ -118,120 +118,61 @@ window.forgotPassword = async function () {
   }
 };
 
-async function sendSMS(phone) {
+async function sendSMS(rawPhone) {
+  // Formata o número para +55DDDXXXXXXXXX
+  function formatPhone(phone) {
+    const clean = phone.replace(/\D/g, '');
+    return '+55' + clean.replace(/^55/, '');
+  }
+
+  const phone = formatPhone(rawPhone);
+
+  if (!phone.startsWith('+55') || phone.length < 13) {
+    showMessage("Formato inválido. Use DDD + número, ex: 34987654321", "error");
+    return false;
+  }
+
+  // Verifica se o número já foi usado
   const phoneSnap = await db.collection("phones").doc(phone).get();
   if (phoneSnap.exists) {
     showMessage("Esse telefone já está cadastrado em outra conta!", "error");
     return false;
   }
 
-  if (!window.recaptchaVerifier) {
-    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-      'size': 'invisible'
-    });
+  // Limpa reCAPTCHA anterior, se houver
+  if (window.recaptchaVerifier) {
+    try { window.recaptchaVerifier.clear(); } catch (e) {}
+    window.recaptchaVerifier = null;
   }
 
+  // Cria novo reCAPTCHA invisível
+  window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+    size: 'invisible',
+    callback: (response) => {
+      console.log("✅ reCAPTCHA resolvido:", response);
+    },
+    'expired-callback': () => {
+      console.warn("⚠️ reCAPTCHA expirado.");
+    }
+  });
+
   try {
+    await window.recaptchaVerifier.render();
+    await window.recaptchaVerifier.verify();
+
     confirmationResult = await auth.signInWithPhoneNumber(phone, window.recaptchaVerifier);
     lastPhone = phone;
     showMessage("Código SMS enviado! Digite o código recebido.", "success");
     window.showSMSSection();
     return true;
+
   } catch (error) {
+    console.error("❌ Erro ao enviar SMS:", error);
     showMessage(error, "error");
     return false;
   }
 }
 
-window.signUp = async function () {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
-  const phone = document.getElementById("phone").value.trim();
-
-  if (!email || !password || !phone) {
-    showMessage("Preencha todos os campos.", "error");
-    return;
-  }
-
-  if (!confirmationResult || lastPhone !== phone) {
-    const sent = await sendSMS(phone);
-    if (!sent) return;
-    return;
-  }
-
-  showMessage("Código SMS enviado! Digite o código recebido no campo abaixo.", "success");
-};
-
-window.confirmSMSCode = async function () {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
-  const phone = document.getElementById("phone").value.trim();
-  const code = document.getElementById("smsCode").value.trim();
-
-  if (!code || code.length < 6) {
-    showMessage("Digite o código recebido por SMS.", "error");
-    return;
-  }
-
-  try {
-    await confirmationResult.confirm(code);
-
-    const fingerprint = await getFingerprint();
-    if (!fingerprint) {
-      showMessage("Erro ao identificar seu navegador. Tente novamente.", "error");
-      return;
-    }
-
-    const fpQuery = await db.collection("fingerprints").doc(fingerprint).get();
-    if (fpQuery.exists) {
-      showMessage("Você já criou uma conta gratuita neste navegador.", "error");
-      return;
-    }
-
-    const phoneSnap = await db.collection("phones").doc(phone).get();
-    if (phoneSnap.exists) {
-      showMessage("Esse telefone já está cadastrado em outra conta!", "error");
-      return;
-    }
-
-    const result = await auth.createUserWithEmailAndPassword(email, password);
-    const uid = result.user.uid;
-
-    await db.collection("usuarios").doc(uid).set({
-      uid: uid,
-      email: email,
-      plano: "gratis",
-      mensagensHoje: 0,
-      ultimaData: new Date().toISOString().split('T')[0],
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-
-    await db.collection("fingerprints").doc(fingerprint).set({
-      email: email,
-      phone: phone,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-
-    await db.collection("phones").doc(phone).set({
-      email: email,
-      fingerprint: fingerprint,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-
-    showMessage("Cadastro realizado com sucesso! Faça login para acessar a plataforma.", "success");
-    await auth.signOut();
-
-    const signUpBtn = document.getElementById('signUpBtn');
-    if (signUpBtn) signUpBtn.disabled = false;
-
-    const smsSection = document.getElementById('sms-section');
-    if (smsSection) smsSection.style.display = 'none';
-
-  } catch (error) {
-    showMessage(error, "error");
-    console.error(error);
-  }
-};
 
 window.register = window.signUp;
 

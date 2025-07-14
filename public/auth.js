@@ -125,11 +125,12 @@ async function sendSMS(phone) {
     return false;
   }
 
-  if (!window.recaptchaVerifier) {
-    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-      'size': 'invisible'
-    });
+  if (!window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+  'size': 'normal',
+  'callback': (response) => {
+    console.log("reCAPTCHA resolvido");
   }
+});
 
   try {
     confirmationResult = await auth.signInWithPhoneNumber(phone, window.recaptchaVerifier);

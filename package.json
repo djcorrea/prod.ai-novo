@@ -1,0 +1,31 @@
+{
+  "name": "chatbot-correa",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^5.1.0",
+    "firebase-admin": "^13.4.0",
+    "mercadopago": "^2.8.0",
+    "node-fetch": "^2.6.7"
+  },
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "serve": "^14.2.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/djcorrea/prod.ai-novo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/djcorrea/prod.ai-novo/issues"
+  },
+  "homepage": "https://github.com/djcorrea/prod.ai-novo#readme",
+  "description": ""
+}

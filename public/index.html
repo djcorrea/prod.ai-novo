@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Prod.AI - Mentor Virtual</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body.loading {
+      visibility: hidden;
+    }
+  </style>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.body.classList.remove("loading");
+    });
+    document.body.classList.add("loading");
+  </script>
+
+  <!-- Firebase e dependências -->
+  <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
+
+  <!-- Scripts principais -->
+  <script src="auth.js" defer></script>
+  <script src="script.js" defer></script>
+</head>
+
+<body>
+  <div class="particles"></div>
+
+  <div class="container fade-in">
+    <!-- TELA INICIAL -->
+    <div class="start-screen" id="startScreen">
+      <div class="start-header" id="startHeader">
+        <h1 class="logo" id="mainLogo">Prod.AI</h1>
+        <p class="subtitle" id="mainSubtitle">Seu mentor virtual inteligente</p>
+        <p class="motivational-text" id="motivationalText">
+          <span class="motivational-line-2">Estou aqui para resolver qualquer problema sobre Produção Musical!</span>
+        </p>
+      </div>
+      
+      <div class="start-input-container" id="startInputContainer">
+        <div class="start-input-wrapper">
+          <input type="text" id="start-input" placeholder="Digite aqui..." autocomplete="off" />
+          <button onclick="sendFirstMessage()" id="startSendBtn" class="start-send-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="m22 2-7 20-4-9-9-4Z"/>
+              <path d="M22 2 11 13"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- HEADER APÓS ANIMAÇÃO -->
+    <header class="header" id="mainHeader" style="display: none;">
+      <h1 class="logo">Prod.AI</h1>
+      <p class="subtitle">Seu mentor virtual inteligente</p>
+    </header>
+
+    <!-- CHAT PRINCIPAL -->
+    <div class="chat-container" id="chatContainer" style="display: none;">
+      <div class="chatbox" id="chatbox">
+        <div style="height: 1px; visibility: hidden;"></div>
+      </div>
+
+      <div class="typing-indicator" id="typingIndicator">
+        <div class="typing-dots">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <span class="typing-text">Assistente está digitando...</span>
+      </div>
+
+      <div class="input-container">
+        <input type="text" id="user-input" placeholder="Digite sua mensagem..." autocomplete="off" />
+        <button onclick="sendMessage()" id="sendBtn" class="btn-plus">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m22 2-7 20-4-9-9-4Z"/>
+            <path d="M22 2 11 13"/>
+          </svg>
+          Enviar
+        </button>
+      </div>
+    </div>
+
+    <!-- FOOTER - APÓS CHAT EXPANDIR -->
+    <footer class="footer" id="mainFooter" style="display: none;">
+      <div class="footer-content-grid">
+        <div class="footer-left">
+          <a href="planos.html" class="btn-plus">Assinar versão Plus</a>
+        </div>
+        <div class="footer-center">
+          <p class="instagram-text">Siga no Instagram: <a href="https://instagram.com/djcorreaoriginal" target="_blank">@djcorreaoriginal</a></p>
+        </div>
+        <div class="footer-right">
+          <button class="btn-logout" id="logoutBtn">Sair</button>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Script para evitar erro de logout indefinido -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const logoutBtn = document.getElementById("logoutBtn");
+      if (logoutBtn) {
+        logoutBtn.addEventListener("click", function () {
+          if (typeof logout === "function") {
+            logout();
+          } else {
+            console.warn("Função logout ainda não carregada.");
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

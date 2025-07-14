@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Planos – Prod.AI</title>
+  <!-- Fonte Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* RESET */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    /* VARIÁVEIS DE TEMA */
+    :root {
+      --bg-body-start: #0b0f1e;
+      --bg-body-end: #000000;
+      --bg-container: #12121b;
+      --bg-card: #1e1e2a;
+      --border-color: rgba(139,92,246,0.6);
+      --glow-color: rgba(139,92,246,0.4);
+      --text-light: #e5e5e5;
+      --text-muted: #8f8f9f;
+      --gradient-start: #8b5cf6;
+      --gradient-end: #3b82f6;
+      --accent: #8b5cf6;
+      --accent-hover: #7c3aed;
+      --radius: 16px;
+      --transition: 0.3s ease;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(circle at top left, var(--bg-body-start), var(--bg-body-end));
+      color: var(--text-light);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .container {
+      background: var(--bg-container);
+      border-radius: var(--radius);
+      padding: 2rem 1.5rem 1rem;
+      width: 100%;
+      max-width: 800px;
+      box-shadow: 0 0 30px var(--glow-color);
+    }
+
+    .container h1 {
+      font-size: 2rem;
+      text-align: center;
+      background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    .container p.subtitle {
+      text-align: center;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      font-size: 0.95rem;
+    }
+
+    .plans {
+      display: flex;
+      gap: 0;
+    }
+
+    .plan-card {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 1rem;
+      flex: 1;
+      position: relative;
+      transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+    }
+    .plan-card:hover {
+      border: 2px solid var(--border-color);
+      box-shadow: 0 8px 20px var(--glow-color);
+      transform: translateY(-3px);
+    }
+
+    /* divisória sutil */
+    .plan-card:first-child {
+      margin-right: 1.5rem;
+      padding-right: 1.5rem;
+      border-right: 1px solid var(--border-color);
+    }
+
+    .plan-card.popular::before {
+      content: 'Mais Popular';
+      position: absolute;
+      top: -8px; right: -8px;
+      background: var(--accent);
+      color: #fff;
+      padding: 3px 8px;
+      border-radius: 10px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      transform: rotate(15deg);
+    }
+
+    .plan-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #fff;
+    }
+
+    .plan-price {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      line-height: 1;
+      background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .plan-price span {
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      margin-left: 3px;
+      -webkit-text-fill-color: var(--text-muted);
+    }
+
+    .plan-features {
+      list-style: none;
+      margin-bottom: 1rem;
+      padding-left: 0;
+      text-align: left;
+    }
+    .plan-features li {
+      position: relative;
+      padding-left: 1.2rem;
+      margin-bottom: 0.6rem;
+      font-size: 0.9rem;
+      color: var(--text-light);
+    }
+    .plan-features li::before {
+      content: '✔︎';
+      position: absolute;
+      left: 0; top: 0;
+      color: var(--accent);
+      font-size: 0.95rem;
+    }
+
+    .plan-button {
+      display: inline-block;
+      padding: 0.6rem 1.2rem;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.9rem;
+      font-weight: 500;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      text-decoration: none;
+      transition: background var(--transition), transform var(--transition);
+    }
+    .plan-button:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+    }
+
+    /* RESPONSIVO PARA CELULAR */
+    @media (max-width: 600px) {
+      .container {
+        padding: 1.5rem 1rem 1rem;
+      }
+      .container h1 {
+        font-size: 1.75rem;
+      }
+      .container p.subtitle {
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+      }
+      .plans {
+        flex-direction: column;
+      }
+      .plan-card:first-child {
+        margin-right: 0;
+        padding-right: 0;
+        border-right: none;
+        margin-bottom: 1.5rem;
+      }
+      .plan-card {
+        padding: 1rem;
+      }
+      .plan-title {
+        font-size: 1.2rem;
+      }
+      .plan-price {
+        font-size: 1.5rem;
+      }
+      .plan-features li {
+        font-size: 0.85rem;
+        padding-left: 1rem;
+      }
+      .plan-button {
+        font-size: 0.85rem;
+        padding: 0.6rem 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Escolha seu plano</h1>
+    <p class="subtitle">Desbloqueie todo o potencial da sua produção musical</p>
+    <div class="plans">
+      <!-- Free -->
+      <div class="plan-card">
+        <h2 class="plan-title">Free</h2>
+        <p class="plan-price">R$0<span>/mês</span></p>
+        <ul class="plan-features">
+          <li>Acesso ao chatbot de produção</li>
+          <li>3 mensagens por dia</li>
+          <li>Respostas básicas</li>
+          <li>Sem personalização</li>
+        </ul>
+        <a href="/signup?plan=free" class="plan-button">Usar grátis</a>
+      </div>
+
+      <!-- Plus -->
+      <div class="plan-card popular">
+        <h2 class="plan-title">Prod.AI Plus</h2>
+        <p class="plan-price">R$19,90<span>/mês</span></p>
+        <ul class="plan-features">
+          <li>Mensagens ilimitadas</li>
+          <li>Respostas mais avançadas</li>
+          <li>Análise de mix/master e melodias</li>
+          <li>Dicas personalizadas para suas tracks</li>
+          <li>Prioridade no servidor</li>
+        </ul>
+        <a href="https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=2c93808497eec1c00197f19da3d600f6" class="plan-button">Assinar agora</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

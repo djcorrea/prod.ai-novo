@@ -187,17 +187,25 @@ async function processMessage(message) {
         data = { error: 'Erro ao processar resposta' };
       }
     } else {
-      data = { error: 'limite diário' };
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        data = { error: 'Erro ao processar resposta' };
+      }
     }
 
     hideTypingIndicator();
 
-    if (data.error && data.error.toLowerCase().includes('limite diário')) {
-      appendMessage(
-        `<strong>Assistente:</strong> 🚫 Você atingiu o limite de <strong>10 mensagens diárias</strong>.<br><br>` +
-        `🔓 <a href="planos.html" class="btn-plus" target="_blank">Assinar versão Plus</a>`,
-        'bot'
-      );
+    if (data.error) {
+      if (data.error.toLowerCase().includes('limite diário')) {
+        appendMessage(
+          `<strong>Assistente:</strong> 🚫 Você atingiu o limite de <strong>10 mensagens diárias</strong>.<br><br>` +
+          `🔓 <a href="planos.html" class="btn-plus" target="_blank">Assinar versão Plus</a>`,
+          'bot'
+        );
+      } else {
+        appendMessage(`<strong>Assistente:</strong> ${data.error}`, 'bot');
+      }
     } else if (data.reply) {
       appendMessage(`<strong>Assistente:</strong> ${data.reply}`, 'bot');
       conversationHistory.push({ role: 'assistant', content: data.reply });

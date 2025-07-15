@@ -178,17 +178,13 @@ async function processMessage(message) {
       body: JSON.stringify({ message, conversationHistory, idToken })
     });
 
-    let data;
-    if (response.ok) {
+      let data;
       const rawText = await response.text();
       try {
         data = JSON.parse(rawText);
       } catch (parseError) {
-        data = { error: 'Erro ao processar resposta' };
+        data = { error: rawText || 'Erro ao processar resposta' };
       }
-    } else {
-      data = { error: 'limite diário' };
-    }
 
     hideTypingIndicator();
 

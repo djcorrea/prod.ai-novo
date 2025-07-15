@@ -118,7 +118,20 @@ export default async function handler(req, res) {
       body: JSON.stringify(requestBody),
     });
 
-    const data = await openaiRes.json();
+    if (!openaiRes.ok) {
+      console.error('❌ Erro da OpenAI:', openaiRes.status);
+      return res
+        .status(502)
+        .json({ error: 'Erro na OpenAI', status: openaiRes.status });
+    }
+
+    let data;
+    try {
+      data = await openaiRes.json();
+    } catch (err) {
+      console.error('❌ Erro ao processar JSON da OpenAI:', err);
+      return res.status(500).json({ error: 'Resposta inválida da OpenAI' });
+    }
 
     if (!data.choices || !data.choices[0]?.message) {
       console.error("❌ Resposta inválida da OpenAI:", data);

@@ -120,7 +120,7 @@ async function handleUserLimits(db, uid, email) {
     return result;
   } catch (error) {
     if (error.message === 'LIMIT_EXCEEDED') {
-      console.warn('🚫 Limite de mensagens atingido para:', email);
+      console.warn('🚫 Limite de mensagens atingido para:', email || uid);
       throw error;
     }
     console.error('❌ Erro na transação do usuário:', error);

@@ -187,7 +187,12 @@ async function processMessage(message) {
         data = { error: 'Erro ao processar resposta' };
       }
     } else {
-      data = { error: 'limite diário' };
+      try {
+        const errorText = await response.text();
+        data = JSON.parse(errorText);
+      } catch (e) {
+        data = { error: `HTTP ${response.status}` };
+      }
     }
 
     hideTypingIndicator();
@@ -202,7 +207,8 @@ async function processMessage(message) {
       appendMessage(`<strong>Assistente:</strong> ${data.reply}`, 'bot');
       conversationHistory.push({ role: 'assistant', content: data.reply });
     } else {
-      appendMessage(`<strong>Assistente:</strong> Ocorreu um erro inesperado.`, 'bot');
+      const msg = data.error ? `Erro: ${data.error}` : 'Ocorreu um erro inesperado.';
+      appendMessage(`<strong>Assistente:</strong> ${msg}`, 'bot');
     }
   } catch (err) {
     hideTypingIndicator();

@@ -179,15 +179,11 @@ async function processMessage(message) {
     });
 
     let data;
-    if (response.ok) {
-      const rawText = await response.text();
-      try {
-        data = JSON.parse(rawText);
-      } catch (parseError) {
-        data = { error: 'Erro ao processar resposta' };
-      }
-    } else {
-      data = { error: 'limite diário' };
+    const rawText = await response.text();
+    try {
+      data = JSON.parse(rawText);
+    } catch (parseError) {
+      data = { error: 'Erro ao processar resposta' };
     }
 
     hideTypingIndicator();
@@ -198,6 +194,8 @@ async function processMessage(message) {
         `🔓 <a href="planos.html" class="btn-plus" target="_blank">Assinar versão Plus</a>`,
         'bot'
       );
+    } else if (!response.ok) {
+      appendMessage(`<strong>Assistente:</strong> ${data.error || 'Ocorreu um erro inesperado.'}`, 'bot');
     } else if (data.reply) {
       appendMessage(`<strong>Assistente:</strong> ${data.reply}`, 'bot');
       conversationHistory.push({ role: 'assistant', content: data.reply });

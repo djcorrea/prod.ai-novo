@@ -61,42 +61,37 @@ function validateAndSanitizeInput(req) {
 // Função para gerenciar limites de usuário
 async function handleUserLimits(db, uid, email) {
   const userRef = db.collection('usuarios').doc(uid);
-  
+
   try {
     const result = await db.runTransaction(async (tx) => {
       const snap = await tx.get(userRef);
       const now = Timestamp.now();
       const today = now.toDate().toDateString();
-      
+
       let userData;
-      
- if (!snap.exists) {
-  // Novo usuário
-  userData = {
-    uid,
-    plano: 'gratis',
-    mensagensRestantes: 9, // já decrementado
-    dataUltimoReset: now,
-    createdAt: now,
-  };
 
-  // Adiciona o email apenas se estiver definido
-  if (email) {
-    userData.email = email;
-  }
+      if (!snap.exists) {
+        // Novo usuário
+        userData = {
+          uid,
+          plano: 'gratis',
+          mensagensRestantes: 9, // já decrementado
+          dataUltimoReset: now,
+          createdAt: now,
+        };
 
-  // Cria o documento com os dados
-  tx.set(userRef, userData);
-}
+        // Adiciona o email apenas se estiver definido
+        if (email) {
+          userData.email = email;
+        }
 
-
-
-  userData.mensagensRestantes = 9;
+        // Cria o documento com os dados
+        tx.set(userRef, userData);
       } else {
         // Usuário existente
         userData = snap.data();
         const lastReset = userData.dataUltimoReset?.toDate().toDateString();
-        
+
         // Reset diário se necessário
         if (lastReset !== today) {
           userData.mensagensRestantes = 10;
@@ -105,22 +100,23 @@ async function handleUserLimits(db, uid, email) {
             dataUltimoReset: now,
           });
         }
-        
+
         // Verificar limite para usuários gratuitos
         if (userData.plano === 'gratis' && userData.mensagensRestantes <= 0) {
           throw new Error('LIMIT_EXCEEDED');
         }
-        
+
         // Decrementar contador
         tx.update(userRef, {
           mensagensRestantes: FieldValue.increment(-1),
         });
-        userData.mensagensRestantes = (userData.mensagensRestantes || 10) - 1;
+        userData.mensagensRestantes =
+          (userData.mensagensRestantes || 10) - 1;
       }
-      
+
       return userData;
     });
-    
+
     return result;
   } catch (error) {
     if (error.message === 'LIMIT_EXCEEDED') {
@@ -131,6 +127,7 @@ async function handleUserLimits(db, uid, email) {
     throw new Error('Erro ao processar limites do usuário');
   }
 }
+
 
 // Função para chamar a API da OpenAI
 async function callOpenAI(messages) {

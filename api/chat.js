@@ -60,17 +60,16 @@ export default async function handler(req, res) {
             createdAt: now,
           };
           tx.set(userRef, userData);
-          return;
-        }
-
-        userData = snap.data();
-        const lastReset = userData.dataUltimoReset?.toDate().toDateString();
-        if (lastReset !== today) {
-          userData.mensagensRestantes = 10;
-          tx.update(userRef, {
-            mensagensRestantes: 10,
-            dataUltimoReset: now,
-          });
+        } else {
+          userData = snap.data();
+          const lastReset = userData.dataUltimoReset?.toDate().toDateString();
+          if (lastReset !== today) {
+            userData.mensagensRestantes = 10;
+            tx.update(userRef, {
+              mensagensRestantes: 10,
+              dataUltimoReset: now,
+            });
+          }
         }
 
         if (userData.plano === 'gratis' && userData.mensagensRestantes <= 0) {

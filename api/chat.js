@@ -70,21 +70,25 @@ async function handleUserLimits(db, uid, email) {
       
       let userData;
       
-      if (!snap.exists) {
+  if (!snap.exists) {
   // Novo usuário
   userData = {
     uid,
-    email,
     plano: 'gratis',
-    mensagensRestantes: 10,
+    mensagensRestantes: 9, // já decrementado
     dataUltimoReset: now,
     createdAt: now,
   };
-  
-  tx.set(userRef, {
-    ...userData,
-    mensagensRestantes: FieldValue.increment(-1), // já cria e decrementa 1
-  }, { merge: true });
+
+  // Adiciona o email apenas se estiver definido
+  if (email) {
+    userData.email = email;
+  }
+
+  // Cria o documento com os dados
+  tx.set(userRef, userData);
+}
+
 
   userData.mensagensRestantes = 9;
       } else {

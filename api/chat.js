@@ -48,7 +48,10 @@ export default async function handler(req, res) {
       await db.runTransaction(async (tx) => {
         const snap = await tx.get(userRef);
         const now = Timestamp.now();
-        const today = now.toDate().toDateString();
+        // Use Sao Paulo timezone to ensure daily limits reset according to Brazil local date
+        const today = now
+          .toDate()
+          .toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
 
         if (!snap.exists) {
           userData = {
@@ -64,7 +67,10 @@ export default async function handler(req, res) {
         }
 
         userData = snap.data();
-        const lastReset = userData.dataUltimoReset?.toDate().toDateString();
+        // Convert stored reset date using the same Sao Paulo timezone for comparison
+        const lastReset = userData.dataUltimoReset
+          ?.toDate()
+          .toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
         if (lastReset !== today) {
           userData.mensagensRestantes = 10;
           tx.update(userRef, {

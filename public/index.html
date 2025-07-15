@@ -12,12 +12,12 @@
       visibility: hidden;
     }
   </style>
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      document.body.classList.remove("loading");
-    });
+ <script>
+  document.addEventListener("DOMContentLoaded", () => {
     document.body.classList.add("loading");
-  </script>
+    document.body.classList.remove("loading");
+  });
+</script>
 
   <!-- Firebase e dependências -->
   <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-app-compat.js"></script>

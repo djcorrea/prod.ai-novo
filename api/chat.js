@@ -130,7 +130,8 @@ async function handleUserLimits(db, uid, email) {
 
 
 // Função para chamar a API da OpenAI
-async function callOpenAI(messages) {
+async function callOpenAI(messages, perfil) {
+  const perfilText = perfil ? `\nDados do usuário:\n- Nível: ${perfil.nivel}\n- DAW: ${perfil.daw}\n- Gênero: ${perfil.genero}\n- Desafio principal: ${perfil.desafio}\nUse essas informações para personalizar as respostas.` : '';
   const requestBody = {
     model: 'gpt-3.5-turbo',
     temperature: 0.7,
@@ -219,7 +220,7 @@ async function callOpenAI(messages) {
 • Abordagem profissional
 • Foco em resultados sonoros
 • Adaptação ao nível do usuário
-Seu foco é: melhorar o som do usuário, aprofundar sua visão técnica e ajudá-lo a crescer artisticamente.
+Seu foco é: melhorar o som do usuário, aprofundar sua visão técnica e ajudá-lo a crescer artisticamente.${perfilText}
 `
       },
       ...messages,
@@ -324,7 +325,7 @@ export default async function handler(req, res) {
     ];
 
     // 6. Chamar OpenAI
-    const reply = await callOpenAI(messages);
+    const reply = await callOpenAI(messages, userData.perfil);
 
     // 7. Log de sucesso
     if (userData.plano === 'gratis') {

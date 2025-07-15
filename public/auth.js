@@ -255,6 +255,29 @@ function checkAuthState() {
     auth.onAuthStateChanged(async (user) => {
       clearTimeout(timeout);
       const isLoginPage = window.location.pathname.includes("login.html");
+      const isProfilePage = window.location.pathname.includes("onboarding.html");
+
+      if (user && !isLoginPage && !isProfilePage) {
+        try {
+          const snap = await db.collection('usuarios').doc(user.uid).get();
+          if (!snap.data()?.perfil) {
+            window.location.href = 'onboarding.html';
+            return resolve(user);
+          }
+        } catch (e) {
+          console.error('Erro ao verificar perfil:', e);
+        }
+      } else if (user && isProfilePage) {
+        try {
+          const snap = await db.collection('usuarios').doc(user.uid).get();
+          if (snap.data()?.perfil) {
+            window.location.href = 'index.html';
+            return resolve(user);
+          }
+        } catch (e) {
+          console.error('Erro ao verificar perfil:', e);
+        }
+      }
 
       if (!user && !isLoginPage) {
         window.location.href = "login.html";

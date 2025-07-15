@@ -178,31 +178,30 @@ async function processMessage(message) {
       body: JSON.stringify({ message, conversationHistory, idToken })
     });
 
+    const rawText = await response.text();
     let data;
-    if (response.ok) {
-      const rawText = await response.text();
-      try {
-        data = JSON.parse(rawText);
-      } catch (parseError) {
-        data = { error: 'Erro ao processar resposta' };
-      }
-    } else {
-      data = { error: 'limite diário' };
+    try {
+      data = JSON.parse(rawText);
+    } catch (parseError) {
+      data = { error: rawText || 'Erro ao processar resposta' };
     }
 
     hideTypingIndicator();
 
-    if (data.error && data.error.toLowerCase().includes('limite diário')) {
+    if (response.status === 403 && data.error && data.error.toLowerCase().includes('limite')) {
       appendMessage(
         `<strong>Assistente:</strong> 🚫 Você atingiu o limite de <strong>10 mensagens diárias</strong>.<br><br>` +
         `🔓 <a href="planos.html" class="btn-plus" target="_blank">Assinar versão Plus</a>`,
         'bot'
       );
-    } else if (data.reply) {
+    } else if (response.ok && data.reply) {
       appendMessage(`<strong>Assistente:</strong> ${data.reply}`, 'bot');
       conversationHistory.push({ role: 'assistant', content: data.reply });
     } else {
-      appendMessage(`<strong>Assistente:</strong> Ocorreu um erro inesperado.`, 'bot');
+      appendMessage(
+        `<strong>Assistente:</strong> ${data.error || 'Ocorreu um erro inesperado.'}`,
+        'bot'
+      );
     }
   } catch (err) {
     hideTypingIndicator();

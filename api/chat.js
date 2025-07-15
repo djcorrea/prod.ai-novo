@@ -118,6 +118,23 @@ export default async function handler(req, res) {
       body: JSON.stringify(requestBody),
     });
 
+    if (!openaiRes.ok) {
+      console.error('❌ OpenAI status:', openaiRes.status);
+      try {
+        const err = await openaiRes.json();
+        console.error('❌ OpenAI error:', err);
+        return res.status(502).json({
+          error: 'Falha ao consultar OpenAI',
+          details: err.error?.message || JSON.stringify(err),
+        });
+      } catch (e) {
+        return res.status(502).json({
+          error: 'Falha ao consultar OpenAI',
+          details: `Status ${openaiRes.status}`,
+        });
+      }
+    }
+
     const data = await openaiRes.json();
 
     if (!data.choices || !data.choices[0]?.message) {

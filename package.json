@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "vercel dev",
-    "start": "node api/chat.js"
+    "start": "node api/chat.js",
+    "test": "jest"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
@@ -19,7 +20,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "serve": "^14.2.4"
+    "serve": "^14.2.4",
+    "jest": "^29.7.0"
   },
   "repository": {
     "type": "git",

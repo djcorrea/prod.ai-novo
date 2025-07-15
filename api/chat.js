@@ -126,7 +126,7 @@ async function handleUserLimits(db, uid, email) {
 }
 
 // Função para chamar a API da OpenAI
-async function callOpenAI(messages) {
+async function callOpenAI(messages, res) {
   const requestBody = {
     model: 'gpt-3.5-turbo',
     temperature: 0.7,
@@ -173,7 +173,10 @@ async function callOpenAI(messages) {
     });
 
     if (!openaiRes.ok) {
-      throw new Error(`OpenAI API erro: ${openaiRes.status} ${openaiRes.statusText}`);
+      const errorBody = await openaiRes.text();
+      console.error('❌ Erro da OpenAI:', openaiRes.status, errorBody);
+      res.status(502).json({ error: 'Erro ao chamar OpenAI' });
+      return null;
     }
 
     const data = await openaiRes.json();
@@ -260,7 +263,10 @@ export default async function handler(req, res) {
     ];
 
     // 6. Chamar OpenAI
-    const reply = await callOpenAI(messages);
+    const reply = await callOpenAI(messages, res);
+    if (reply === null) {
+      return; // resposta já enviada em caso de erro na OpenAI
+    }
 
     // 7. Log de sucesso
     if (userData.plano === 'gratis') {

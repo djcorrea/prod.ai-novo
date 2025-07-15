@@ -304,7 +304,7 @@ export default async function handler(req, res) {
     }
 
     const uid = decoded.uid;
-    const email = decoded.email;
+    const email = decoded.email ?? 'desconhecido';
 
     // 4. Gerenciar limites do usuário
     let userData;

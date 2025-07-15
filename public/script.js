@@ -178,16 +178,12 @@ async function processMessage(message) {
       body: JSON.stringify({ message, conversationHistory, idToken })
     });
 
-    let data;
-    if (response.ok) {
-      const rawText = await response.text();
-      try {
-        data = JSON.parse(rawText);
-      } catch (parseError) {
-        data = { error: 'Erro ao processar resposta' };
-      }
-    } else {
-      data = { error: 'limite diário' };
+    let data = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      const errMsg = data?.error || 'Erro ao conectar com o servidor';
+      appendMessage(`<strong>Assistente:</strong> ${errMsg}`, 'bot');
+      return;
     }
 
     hideTypingIndicator();

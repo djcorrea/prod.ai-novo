@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Prod.AI – Perfil</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="particles"></div>
+  <div class="container fade-in onboarding-container">
+    <div class="question-step" data-step="1">
+      <h2>1. Qual seu nível técnico em produção musical?</h2>
+      <div class="question-option"><label><input type="radio" name="nivel" value="Iniciante – estou começando agora">Iniciante – estou começando agora</label></div>
+      <div class="question-option"><label><input type="radio" name="nivel" value="Intermediário – já produzo, mas quero melhorar">Intermediário – já produzo, mas quero melhorar</label></div>
+      <div class="question-option"><label><input type="radio" name="nivel" value="Avançado – produzo, mixo e lanço com frequência">Avançado – produzo, mixo e lanço com frequência</label></div>
+      <div class="btn-center-wrapper"><button class="btn-plus next-btn">Próximo</button></div>
+    </div>
+    <div class="question-step" data-step="2">
+      <h2>2. Qual DAW você usa como principal?</h2>
+      <div class="question-option"><label><input type="radio" name="daw" value="FL Studio">FL Studio</label></div>
+      <div class="question-option"><label><input type="radio" name="daw" value="Ableton Live">Ableton Live</label></div>
+      <div class="question-option"><label><input type="radio" name="daw" value="Logic Pro">Logic Pro</label></div>
+      <div class="question-option"><label><input type="radio" name="daw" value="Pro Tools">Pro Tools</label></div>
+      <div class="question-option"><label><input type="radio" name="daw" value="Acid">Acid</label></div>
+      <div class="question-option"><label><input type="radio" name="daw" value="Outra">Outra</label></div>
+      <div class="btn-center-wrapper"><button class="btn-plus next-btn">Próximo</button></div>
+    </div>
+    <div class="question-step" data-step="3">
+      <h2>3. Qual seu gênero musical principal?</h2>
+      <div class="question-option"><label><input type="radio" name="genero" value="Funk">Funk</label></div>
+      <div class="question-option"><label><input type="radio" name="genero" value="Trap / Hip Hop">Trap / Hip Hop</label></div>
+      <div class="question-option"><label><input type="radio" name="genero" value="Eletrônica / EDM">Eletrônica / EDM</label></div>
+      <div class="question-option"><label><input type="radio" name="genero" value="Lo-fi / Chill">Lo-fi / Chill</label></div>
+      <div class="question-option"><label><input type="radio" name="genero" value="Trance">Trance</label></div>
+      <div class="question-option"><label><input type="radio" name="genero" value="Outro">Outro</label></div>
+      <div class="btn-center-wrapper"><button class="btn-plus next-btn">Próximo</button></div>
+    </div>
+    <div class="question-step" data-step="4">
+      <h2>4. Qual seu maior desafio atual?</h2>
+      <div class="question-option"><label><input type="radio" name="desafio" value="Mixagem">Mixagem</label></div>
+      <div class="question-option"><label><input type="radio" name="desafio" value="Masterização">Masterização</label></div>
+      <div class="question-option"><label><input type="radio" name="desafio" value="Composição / arranjo">Composição / arranjo</label></div>
+      <div class="question-option"><label><input type="radio" name="desafio" value="Criação Beat">Criação Beat</label></div>
+      <div class="question-option"><label><input type="radio" name="desafio" value="Carreira / lançamentos / distribuição">Carreira / lançamentos / distribuição</label></div>
+      <div class="btn-center-wrapper"><button class="btn-plus next-btn">Próximo</button></div>
+    </div>
+    <div class="question-step" data-step="5">
+      <h2>5. Você já lançou músicas nas plataformas digitais?</h2>
+      <div class="question-option"><label><input type="radio" name="lancou" value="Sim">Sim</label></div>
+      <div class="question-option"><label><input type="radio" name="lancou" value="Não">Não</label></div>
+      <div class="question-option"><label><input type="radio" name="lancou" value="Ainda não, mas pretendo">Ainda não, mas pretendo</label></div>
+      <div class="btn-center-wrapper"><button class="btn-plus next-btn">Próximo</button></div>
+    </div>
+    <div class="question-step" data-step="6">
+      <h2>6. Você trabalha com música profissionalmente?</h2>
+      <div class="question-option"><label><input type="radio" name="trabalha" value="Sim, vivo disso">Sim, vivo disso</label></div>
+      <div class="question-option"><label><input type="radio" name="trabalha" value="Parcialmente (freelas, estúdio, etc.)">Parcialmente (freelas, estúdio, etc.)</label></div>
+      <div class="question-option"><label><input type="radio" name="trabalha" value="Ainda não, mas quero">Ainda não, mas quero</label></div>
+      <div class="question-option"><label><input type="radio" name="trabalha" value="Só por hobby">Só por hobby</label></div>
+      <div class="btn-center-wrapper"><button class="btn-plus" id="startBtn">Começar</button></div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore-compat.js"></script>
+  <script src="auth.js"></script>
+  <script src="profile.js"></script>
+</body>
+</html>

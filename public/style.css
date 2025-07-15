@@ -915,3 +915,13 @@ footer {
   padding-left: 0; /* ou ajuste conforme a margem do seu input */
 }
 
+
+/* Onboarding */
+.onboarding-container { background: rgba(15,15,35,0.95); border: 1px solid rgba(147,51,234,0.3); border-radius: 24px; padding: 2rem; margin: 2rem auto; max-width: 600px; }
+.question-step { display: none; }
+.question-step.active { display: block; }
+.question-step h2 { color: #fff; margin-bottom: 1rem; font-size: 1.2rem; }
+.question-option { margin-bottom: 0.5rem; }
+.question-option label { color: #fff; cursor: pointer; }
+.question-option input { margin-right: 0.4rem; }
+

@@ -70,7 +70,7 @@ async function handleUserLimits(db, uid, email) {
       
       let userData;
       
-  if (!snap.exists) {
+ if (!snap.exists) {
   // Novo usuário
   userData = {
     uid,
@@ -88,6 +88,7 @@ async function handleUserLimits(db, uid, email) {
   // Cria o documento com os dados
   tx.set(userRef, userData);
 }
+
 
 
   userData.mensagensRestantes = 9;

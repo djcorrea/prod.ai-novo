@@ -178,26 +178,28 @@ async function processMessage(message) {
       body: JSON.stringify({ message, conversationHistory, idToken })
     });
 
+    const text = await response.text();
     let data;
-    if (response.ok) {
-      const rawText = await response.text();
-      try {
-        data = JSON.parse(rawText);
-      } catch (parseError) {
-        data = { error: 'Erro ao processar resposta' };
-      }
-    } else {
-      data = { error: 'limite diário' };
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = { error: text || 'Erro desconhecido' };
     }
 
     hideTypingIndicator();
 
-    if (data.error && data.error.toLowerCase().includes('limite diário')) {
-      appendMessage(
-        `<strong>Assistente:</strong> 🚫 Você atingiu o limite de <strong>10 mensagens diárias</strong>.<br><br>` +
-        `🔓 <a href="planos.html" class="btn-plus" target="_blank">Assinar versão Plus</a>`,
-        'bot'
-      );
+    if (!response.ok) {
+      if (response.status === 401) {
+        appendMessage(`<strong>Assistente:</strong> É necessário autenticar-se novamente para continuar.`, 'bot');
+      } else if (response.status === 403) {
+        appendMessage(
+          `<strong>Assistente:</strong> 🚫 Você atingiu o limite de <strong>10 mensagens diárias</strong>.<br><br>` +
+          `🔓 <a href="planos.html" class="btn-plus" target="_blank">Assinar versão Plus</a>`,
+          'bot'
+        );
+      } else {
+        appendMessage(`<strong>Assistente:</strong> Ocorreu um erro inesperado.`, 'bot');
+      }
     } else if (data.reply) {
       appendMessage(`<strong>Assistente:</strong> ${data.reply}`, 'bot');
       conversationHistory.push({ role: 'assistant', content: data.reply });

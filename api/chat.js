@@ -71,20 +71,22 @@ async function handleUserLimits(db, uid, email) {
       let userData;
       
       if (!snap.exists) {
-        // Novo usuário
-        userData = {
-          uid,
-          email,
-          plano: 'gratis',
-          mensagensRestantes: 10,
-          dataUltimoReset: now,
-          createdAt: now,
-        };
-        tx.set(userRef, userData);
-        tx.update(userRef, {
-          mensagensRestantes: FieldValue.increment(-1),
-        });
-        userData.mensagensRestantes = 9; // Já decrementamos 1
+  // Novo usuário
+  userData = {
+    uid,
+    email,
+    plano: 'gratis',
+    mensagensRestantes: 10,
+    dataUltimoReset: now,
+    createdAt: now,
+  };
+  
+  tx.set(userRef, {
+    ...userData,
+    mensagensRestantes: FieldValue.increment(-1), // já cria e decrementa 1
+  }, { merge: true });
+
+  userData.mensagensRestantes = 9;
       } else {
         // Usuário existente
         userData = snap.data();

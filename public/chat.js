@@ -150,12 +150,6 @@ async function sendSMS(phone) {
     return false;
   }
 
-  // Checar telefone já cadastrado
-  const phoneSnap = await db.collection("phones").doc(validPhone).get();
-  if (phoneSnap.exists) {
-    showMessage("Esse telefone já está cadastrado em outra conta!", "error");
-    return false;
-  }
 
   // Limpar reCAPTCHA anterior se existir
   if (window.recaptchaVerifier) {
@@ -225,56 +219,27 @@ window.confirmSMSCode = async function() {
   }
 
   try {
-    await confirmationResult.confirm(code);
+    const phoneCred = firebase.auth.PhoneAuthProvider.credential(confirmationResult.verificationId, code);
+    const phoneUser = await auth.signInWithCredential(phoneCred);
+
+    const emailCred = firebase.auth.EmailAuthProvider.credential(email, password);
+    await phoneUser.user.linkWithCredential(emailCred);
 
     const fingerprint = await getFingerprint();
-    if (!fingerprint) {
-      showMessage("Erro ao identificar seu navegador. Tente novamente.", "error");
-      return;
+    if (fingerprint) {
+      const functions = firebase.app().functions();
+      try {
+        await functions.httpsCallable('registerAccount')({ fingerprint, phone });
+      } catch (e) {
+        showMessage(e.message || 'Erro ao registrar dados', 'error');
+        return;
+      }
     }
 
-    const fpQuery = await db.collection("fingerprints").doc(fingerprint).get();
-    if (fpQuery.exists) {
-      showMessage("Você já criou uma conta gratuita neste navegador. Faça login ou assine o plano Plus.", "error");
-      return;
-    }
-
-    const phoneSnap = await db.collection("phones").doc(phone).get();
-    if (phoneSnap.exists) {
-      showMessage("Esse telefone já está cadastrado em outra conta!", "error");
-      return;
-    }
-
-    const result = await auth.createUserWithEmailAndPassword(email, password);
-    const user = result.user;
-    const hoje = new Date().toISOString().split('T')[0];
-
-    // **CORREÇÃO PRINCIPAL: Criar usuário na coleção "usuarios"**
-    await db.collection("usuarios").doc(user.uid).set({
-      uid: user.uid,
-      email: email,
-      plano: 'gratis',
-      mensagensHoje: 0,
-      ultimaData: hoje,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-
-    await db.collection("fingerprints").doc(fingerprint).set({
-      email: email,
-      phone: phone,
-      uid: user.uid,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    
-    await db.collection("phones").doc(phone).set({
-      email: email,
-      fingerprint: fingerprint,
-      uid: user.uid,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-
-    showMessage("Cadastro realizado com sucesso! Faça login para acessar a plataforma.", "success");
-    await auth.signOut();
+    const idToken = await phoneUser.user.getIdToken();
+    localStorage.setItem("idToken", idToken);
+    localStorage.setItem("user", JSON.stringify({ uid: phoneUser.user.uid, email: phoneUser.user.email }));
+    showMessage("Cadastro realizado com sucesso!", "success");
 
     const signUpBtn = document.getElementById('signUpBtn');
     if (signUpBtn) signUpBtn.disabled = false;

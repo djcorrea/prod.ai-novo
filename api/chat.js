@@ -60,10 +60,10 @@ export default async function handler(req, res) {
             createdAt: now,
           };
           tx.set(userRef, userData);
-          return;
+          console.log('🆕 Novo usuário criado:', email);
+        } else {
+          userData = snap.data();
         }
-
-        userData = snap.data();
         const lastReset = userData.dataUltimoReset?.toDate().toDateString();
         if (lastReset !== today) {
           userData.mensagensRestantes = 10;

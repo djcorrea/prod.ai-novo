@@ -194,6 +194,46 @@ window.signUp = async function () {
   showMessage("Código SMS enviado! Digite o código recebido no campo abaixo.", "success");
 };
 
+window.confirmSMSCode = async function() {
+  const email    = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const phone    = document.getElementById("phone").value.trim();
+  const code     = document.getElementById("smsCode").value.trim();
+
+  if (!code || code.length < 6) {
+    showMessage("Digite o código recebido por SMS.", "error");
+    return;
+  }
+
+  try {
+    const phoneCred = firebase.auth.PhoneAuthProvider.credential(confirmationResult.verificationId, code);
+    const phoneUser = await auth.signInWithCredential(phoneCred);
+
+    const emailCred = firebase.auth.EmailAuthProvider.credential(email, password);
+    await phoneUser.user.linkWithCredential(emailCred);
+
+    const fingerprint = await getFingerprint();
+    if (fingerprint) {
+      const functions = firebase.app().functions();
+      try {
+        await functions.httpsCallable('registerAccount')({ fingerprint, phone });
+      } catch (e) {
+        showMessage(e.message || 'Erro ao registrar dados', 'error');
+        return;
+      }
+    }
+
+    const idToken = await phoneUser.user.getIdToken();
+    localStorage.setItem("idToken", idToken);
+    localStorage.setItem("user", JSON.stringify({ uid: phoneUser.user.uid, email: phoneUser.user.email }));
+
+    window.location.href = "index.html";
+  } catch (error) {
+    console.error("Erro no cadastro:", error);
+    showMessage(error, "error");
+  }
+};
+
 
 window.register = window.signUp;
 

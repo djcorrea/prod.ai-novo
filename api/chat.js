@@ -55,7 +55,7 @@ export default async function handler(req, res) {
             uid,
             email,
             plano: 'gratis',
-            mensagensRestantes: 9,
+            mensagensRestantes: 10,
             dataUltimoReset: now,
             createdAt: now,
           };

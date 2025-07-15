@@ -60,7 +60,6 @@ export default async function handler(req, res) {
             createdAt: now,
           };
           tx.set(userRef, userData);
-          return;
         }
 
         userData = snap.data();
@@ -117,6 +116,13 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify(requestBody),
     });
+
+    if (!openaiRes.ok) {
+      console.error('❌ OpenAI status:', openaiRes.status);
+      return res
+        .status(502)
+        .json({ error: 'Erro na OpenAI', status: openaiRes.status });
+    }
 
     const data = await openaiRes.json();
 

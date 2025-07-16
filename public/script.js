@@ -50,6 +50,7 @@ async function sendFirstMessage() {
     if (!chatStarted) {
       await animateToChat();
       chatStarted = true;
+      conversationHistory = [];
     }
 
     input.value = message;
@@ -226,6 +227,7 @@ async function sendMessage() {
   if (!chatStarted) {
     await animateToChat();
     chatStarted = true;
+    conversationHistory = [];
     isFirstMessage = false;
   }
 

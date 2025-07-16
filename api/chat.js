@@ -23,7 +23,7 @@ async function initializeFirebase() {
 
 // Função para validar e sanitizar dados de entrada
 function validateAndSanitizeInput(req) {
-  const { message, conversationHistory = [], idToken } = req.body;
+  const { message, conversationHistory, idToken } = req.body;
   
   // Validação do token
   if (!idToken || typeof idToken !== 'string') {
@@ -36,24 +36,24 @@ function validateAndSanitizeInput(req) {
   }
   
   // Validação e sanitização do histórico de conversas
-  let validHistory = [];
-  if (Array.isArray(conversationHistory)) {
-    validHistory = conversationHistory
-      .filter(msg => {
-        return msg && 
-          typeof msg === 'object' && 
-          msg.role && 
-          msg.content &&
-          typeof msg.content === 'string' &&
-          msg.content.trim().length > 0 &&
-          ['user', 'assistant', 'system'].includes(msg.role);
-      })
-      .slice(-10); // Limita a 10 mensagens mais recentes
+  if (!Array.isArray(conversationHistory)) {
+    throw new Error('HISTORY_INVALID');
   }
+
+  const mensagensFiltradas = Array.isArray(conversationHistory)
+    ? conversationHistory
+        .filter(
+          msg =>
+            msg &&
+            typeof msg.role === 'string' &&
+            typeof msg.content === 'string'
+        )
+        .slice(-10)
+    : [];
   
   return {
     message: message.trim().substring(0, 2000), // Limita tamanho da mensagem
-    conversationHistory: validHistory,
+    conversationHistory: mensagensFiltradas,
     idToken: idToken.trim()
   };
 }
@@ -289,6 +289,9 @@ export default async function handler(req, res) {
       }
       if (error.message === 'MESSAGE_INVALID') {
         return res.status(400).json({ error: 'Mensagem inválida ou vazia' });
+      }
+      if (error.message === 'HISTORY_INVALID') {
+        return res.status(400).json({ error: 'Histórico de conversa inválido' });
       }
       throw error;
     }
